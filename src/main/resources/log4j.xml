@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//log4j/log4j Configuration//EN" "log4j.dtd">
+ 
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+ 
+    <appender name="Appender1" class="org.apache.log4j.ConsoleAppender">
+        <param name="File" value="../logs/DungNV50.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-7p %d [%t] %c %x - %m%n"/>
+        </layout>
+    </appender>
+  
+    <appender name="Appender2" class="org.apache.log4j.FileAppender">
+        <param name="File" value="../logs/DungNV50.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-7p %d [%t] %c %x - %m%n"/>
+        </layout>
+    </appender>
+    
+    <root>
+        <priority value="INFO"/>
+        <appender-ref ref="Appender1" />
+        <appender-ref ref="Appender2" />
+    </root>
+    
+    <appender name="LogResponseInterceptor" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="../logs/action/RequestLog.log" />
+        <param name="append" value="true" />
+        <param name="datePattern" value="'.'yyyy-MM-dd-HH" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"  value="%n%m%n" />
+        </layout>
+    </appender>	
+    
+    <logger name="com.dungnv.vwf5.base.servicecaller.WSCxfOutInterceptor">
+        <level value="error"/>
+        <level value="info"/>
+        <appender-ref ref="LogResponseInterceptor"/>
+    </logger>
+    
+</log4j:configuration> 

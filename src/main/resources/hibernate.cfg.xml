@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <!--    <session-factory>
+        <property name="connection.url">jdbc:oracle:thin:@10.58.71.247/dbpmvt</property>
+        <property name="connection.username">WFM</property>
+        <property name="connection.password">WFM#2015</property>
+        <property name="connection.driver_class">oracle.jdbc.OracleDriver</property>
+        <property name="connection.autocommit">true</property>
+        <property name="dialect">org.hibernate.dialect.OracleDialect</property>
+        <property name="show_sql">true</property>
+    </session-factory>-->
+    
+    <session-factory>
+        
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://125.212.207.200:3306/StreetFood</property>
+        <property name="connection.username">streetfood</property>
+        <property name="connection.password">creatrix#123</property>
+        <property name="show_sql">true</property>
+    </session-factory>
+</hibernate-configuration>

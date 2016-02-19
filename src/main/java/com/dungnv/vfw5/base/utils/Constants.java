@@ -68,7 +68,7 @@ public class Constants {
         public final static String BOOLEAN = "Boolean";
     }
 
-    public final class LOG_ACTION_TYPE {
+    public final class ACTION_TYPE {
 
         public final static String SELECT = "SELECT";
         public final static String INSERT = "INSERT";
@@ -77,31 +77,22 @@ public class Constants {
         public final static String COPY = "COPY";
     }
 
-    /**
-     * constants group item for combobox on form
-     */
-    public static class GROUP_PARAM_CONSTANTS {
+    public final class WEB_SERVICE_CONS {
 
-        public final static String DATA_TYPE = "DATA_TYPE";
-        public final static String ACCOUNT_GROUP_TYPE = "ACCOUNT_GROUP_TYPE";
-        public final static String IS_PARENT_ACCOUNT_TYPE = "IS_PARENT_ACCOUNT_TYPE";
-        public final static String TYPE_PRICE_PLAN = "TYPE_PRICE_PLAN";
-        public final static String CYCLE_UNIT = "CYCLE_UNIT";
-        public final static String CALCULATION_PRICE = "CALCULATION_PRICE";
-        public final static String CDR_PROP_TYPE = "CDR_PROP_TYPE";
-        public final static String CDR_PROP_UNIT_TYPE = "CDR_PROP_UNIT_TYPE";
-        public final static String SWITCHBOARD = "SWITCHBOARD";
-        public final static String CDR_GROUP = "CDR_GROUP";
-        public final static String BACKUP_STYLE = "BACKUP_STYLE";
-        public final static String DOWNLOAD_TYPE = "DOWNLOAD_TYPE";
-        public final static String ZONE_RATING_TYPE = "ZONE_RATING_TYPE";
-        public final static String ACCOUNT_TYPE_TYPE = "ACCOUNT_TYPE_TYPE";
-        public final static String NEW_BASIC_PRICE = "NEW_BASIC_PRICE";
-        public final static String TER_BASIC_PRICE = "TER_BASIC_PRICE";
-        public final static String NORMAL_BASIC_PRICE = "NORMAL_BASIC_PRICE";
-        public final static String PROCESS_GROUP_NAME = "PROCESS_GROUP_NAME";
-        public final static String CACHE_GROUP_NAME = "CACHE_GROUP_NAME";
-        public final static String RECURRING_TYPE = "RECURRING_TYPE";
-        public final static String RECURRING = "recurring";
+        public final static String SEPERATE_URL = "/";
+        public final static String SEPERATE_OPERATOR = ":";
+        public final static String ARG_HEADER = "$headerArgument$";
+        public final static String ARG_BODY = "$argument$";
     }
+
+    public final class OBJECT_TYPE {
+
+        public final static String CATEGORY = "CATEGORY";
+        public final static String DISH = "DISH";
+        public final static String RESTAURANT = "RESTAURANT";
+        public final static String ARTICLE = "ARTICLE";
+        public final static String SLIDESHOW = "SLIDESHOW";
+
+    }
+
 }

@@ -46,6 +46,8 @@ public interface BaseFWServiceInterface<TDTO extends BaseFWDTO, TModel extends B
     public List<String> getListSequense(String seq, int size);
 
     public String update(TDTO tDTO);
+    
+    public String updateMerge(TDTO tDTO);
 
     public String updateSession(TDTO tDTO, Session session);
 

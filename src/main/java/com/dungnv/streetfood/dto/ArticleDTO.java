@@ -28,7 +28,7 @@ public class ArticleDTO extends BaseFWDTO<Article>{
     private String updateTime;
     private String updateTimeGmt;
     private String viewCount;
-    private static long changedTime = 0;
+    
     //Constructor
 	public ArticleDTO() {
 		setDefaultSortField("id");	

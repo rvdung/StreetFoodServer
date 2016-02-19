@@ -24,7 +24,7 @@ public final class ErrorUtils {
             str = new StringBuilder().append(str).append("\n").toString();
             StackTraceElement[] traceList = e.getStackTrace();
             for (StackTraceElement trace : traceList) {
-                if (trace.getClassName().contains("com.dungnv.gnoc")
+                if (trace.getClassName().contains("com.dungnv")
                         || trace.getClassName().contains("com.dungnv.vfw5")
                         || trace.getClassName().contains("com.dungnv.vwf5")) {
                     str = new StringBuilder().append(str).append(" [").append(trace.getClassName()).append(".class][").append(trace.getMethodName()).append("][").append(trace.getLineNumber()).append("]\n").toString();

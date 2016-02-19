@@ -5,7 +5,7 @@
  */
 package com.dungnv.vwf5.base.servicecaller;
 
-import com.dungnv.vwf5.base.utils.Constants;
+import com.dungnv.vfw5.base.utils.Constants;
 import java.io.Serializable;
 
 /**

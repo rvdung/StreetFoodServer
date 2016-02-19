@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
@@ -24,6 +25,7 @@ public final class StringUtils {
     private static String alphabeUpCaseNumber = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static String mask = "0123456789_aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
     private static String maskEN = "0123456789_aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
+    private static String RANDOM_STRING = "0123456789 _ aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
 
     /**
      * ZERO.
@@ -176,16 +178,18 @@ public final class StringUtils {
     }
 
     public static String formatLike(String str) {
-        return "%" + str.trim().toLowerCase().replaceAll("_", "\\\\_") + "%";
+//        return "%" + str.trim().toLowerCase().replaceAll("_", "\\\\_") + "%";
+        return "%" + str.trim().toLowerCase() + "%";
     }
 
     public static String formatOrder(String str, String direction) {
-        return " NLSSORT(" + str + ",'NLS_SORT=vietnamese') " + direction;
+//        return " NLSSORT(" + str + ",'NLS_SORT=vietnamese') " + direction;
+        return str + "  " + direction;
     }
 
     public static String formatDate(Date date) {
-//        return " to_date('" + DateTimeUtils.convertDateToString(date, ParamUtils.ddMMyyyy) + "', '" + ParamUtils.ddMMyyyy + "')";
-        return DateTimeUtils.convertDateToString(date, ParamUtils.ddMMyyyy);
+//        return " to_date('" + DateTimeUtils.convertDateToString(date, ParamUtils.ddMMyyyyHHmmss) + "', '" + ParamUtils.ddMMyyyy + "')";
+        return DateTimeUtils.convertDateToString(date, ParamUtils.ddMMyyyyHHmmss);
     }
 
     public static String formatFunction(String function, String str) {
@@ -357,6 +361,94 @@ public final class StringUtils {
             escapeHTMLString(obj);
             escapeObjectList.set(i, obj);
         }
+    }
+
+    public static String trimString(String str, boolean isLower) {
+        return isLower ? str.trim().toLowerCase() : str.trim();
+    }
+
+    public static void trimString(Object obj, boolean isLower) {
+        String oldData = "";
+        String newData = "";
+        try {
+            if (obj != null) {
+                Class escapeClass = obj.getClass();
+                Field fields[] = escapeClass.getDeclaredFields();
+                Field superFields[] = escapeClass.getSuperclass().getDeclaredFields();
+                Field allField[] = new Field[fields.length + superFields.length];
+                System.arraycopy(fields, 0, allField, 0, fields.length);
+                System.arraycopy(superFields, 0, allField, fields.length, superFields.length);
+                for (Field f : allField) {
+                    f.setAccessible(true);
+                    if (f.getType().equals(java.lang.String.class)) {
+                        if (f.get(obj) != null) {
+                            oldData = f.get(obj).toString();
+                            newData = isLower ? oldData.trim().toLowerCase() : oldData.trim();
+                            f.set(obj, newData);
+                        }
+                    } else if (f.getType().isArray()) {
+                        if (f.getType().getComponentType().equals(java.lang.String.class)) {
+                            String[] tmpArr = (String[]) f.get(obj);
+                            if (tmpArr != null) {
+                                for (int i = 0; i < tmpArr.length; i++) {
+                                    tmpArr[i] = isLower ? tmpArr[i].trim().toLowerCase() : tmpArr[i].trim();
+                                }
+                                f.set(obj, tmpArr);
+                            }
+                        }
+                    } else if (f.get(obj) instanceof List) {
+                        List<Object> tmpList = (List<Object>) f.get(obj);
+                        for (int i = 0; i < tmpList.size(); i++) {
+                            if (tmpList.get(i) instanceof java.lang.String) {
+                                tmpList.set(i, isLower ? tmpList.get(i).toString().trim().toLowerCase() : tmpList.get(i).toString().trim());
+                            }
+                        }
+                        f.set(obj, tmpList);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void trimString(List escapeObjectList, boolean isLower) {
+        Object obj = null;
+        for (int i = 0; i < escapeObjectList.size(); i++) {
+            obj = escapeObjectList.get(i);
+            trimString(obj, isLower);
+            escapeObjectList.set(i, obj);
+        }
+    }
+
+    public static List<String> trimString(List<String> list, Boolean isLower) {
+
+        String str = null;
+        for (int i = 0; i < list.size(); i++) {
+            str = list.get(i);
+            formatString(str);
+            list.set(i, str);
+        }
+        return list;
+    }
+
+    public static List<String> trimStringToNewList(List<String> list, Boolean isLower) {
+        List<String> temp = new ArrayList<>();
+        String str = null;
+        for (int i = 0; i < list.size(); i++) {
+            temp.add(isLower ? list.get(i).trim().toLowerCase() : list.get(i).trim());
+        }
+        return temp;
+    }
+
+    public static String generateRandomString(int length) {
+        Random rngRandom = new Random();
+        char[] text = new char[length];
+        int lengRnd = RANDOM_STRING.length();
+        for (int i = 0; i < length; i++) {
+            text[i] = RANDOM_STRING.charAt(rngRandom.nextInt(lengRnd));
+        }
+        return new String(text);
     }
 //
 //    public static String subString(String input, int start, int count) {

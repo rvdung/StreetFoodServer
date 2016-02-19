@@ -37,9 +37,80 @@
             <ref bean="WSCxfOutInterceptor"/>
         </cxf:outInterceptors>
     </cxf:bus>
+    
+    
+    <jaxws:endpoint id="clientService"
+                     implementor="com.dungnv.streetfood.service.ClientServiceImpl"
+                     address="/ClientService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="articleService"
+                     implementor="com.dungnv.streetfood.service.ArticleServiceImpl"
+                     address="/ArticleService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="categoryService"
+                    implementor="com.dungnv.streetfood.service.CategoryServiceImpl"
+                    address="/CategoryService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="dishGroupLangageService"
+                    implementor="com.dungnv.streetfood.service.DishGroupLangageServiceImpl"
+                    address="/DishGroupLangageService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="tagCategoryService"
+                    implementor="com.dungnv.streetfood.service.TagCategoryServiceImpl"
+                    address="/TagCategoryService">
+    </jaxws:endpoint>
    
-     <jaxws:endpoint id="articleService"
-                    implementor="com.dungnv.streetfood.service.ArticleServiceImpl"
-                    address="/ArticleService">
+    <jaxws:endpoint id="dishService"
+                    implementor="com.dungnv.streetfood.service.DishServiceImpl"
+                    address="/DishService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="dishLanguageService"
+                    implementor="com.dungnv.streetfood.service.DishLanguageServiceImpl"
+                    address="/DishLanguageService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="imgService"
+                    implementor="com.dungnv.streetfood.service.ImgServiceImpl"
+                    address="/ImgService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="articleLanguageService"
+                    implementor="com.dungnv.streetfood.service.ArticleLanguageServiceImpl"
+                    address="/ArticleLanguageService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="categoryDishService"
+                    implementor="com.dungnv.streetfood.service.CategoryDishServiceImpl"
+                    address="/CategoryDishService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="commentService"
+                    implementor="com.dungnv.streetfood.service.CommentServiceImpl"
+                    address="/CommentService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="tagDishService"
+                    implementor="com.dungnv.streetfood.service.TagDishServiceImpl"
+                    address="/TagDishService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="restaurantService"
+                    implementor="com.dungnv.streetfood.service.RestaurantServiceImpl"
+                    address="/RestaurantService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="slideShowService"
+                    implementor="com.dungnv.streetfood.service.SlideShowServiceImpl"
+                    address="/SlideShowService">
+    </jaxws:endpoint>
+    
+    <jaxws:endpoint id="userService"
+                    implementor="com.dungnv.streetfood.service.UserServiceImpl"
+                    address="/UserService">
     </jaxws:endpoint>
 </beans>

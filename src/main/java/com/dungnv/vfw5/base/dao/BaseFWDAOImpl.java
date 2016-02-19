@@ -48,6 +48,14 @@ public class BaseFWDAOImpl<T extends BaseFWModel, ID extends Serializable> {
     private SessionFactory sessionFactory;
 
     public Session getSession() {
+//        SessionFactoryImpl sfsdf = (SessionFactoryImpl) sessionFactory;
+//        LocalSessionFactoryBean test = (LocalSessionFactoryBean) sessionFactory;
+//        Properties pro =  sfsdf.getProperties();
+//        Set<Object> set = pro.keySet();
+//        for (Object key : set) {
+//            System.out.println("--- " + key.toString() + "  -> " + pro.get(key).toString());
+//        }
+
         return sessionFactory.getCurrentSession();
     }
 
@@ -312,7 +320,7 @@ public class BaseFWDAOImpl<T extends BaseFWModel, ID extends Serializable> {
     @Transactional
     public String updateMerge(T obj) {
         try {
-            session.merge(obj);
+            getSession().merge(obj);
             return ParamUtils.SUCCESS;
         } catch (HibernateException he) {
             log.error(he.getMessage(), he);
@@ -496,11 +504,11 @@ public class BaseFWDAOImpl<T extends BaseFWModel, ID extends Serializable> {
                 if (con.getType().equals(ParamUtils.TYPE_STRING)) {
                     sql.append(":idx").append(String.valueOf(index++));
                     if (con.getOperator().equals(ParamUtils.OP_LIKE)) {
-                        sql.append(" ESCAPE '\\' ");
+//                        sql.append(" ESCAPE '\\' ");
                     }
                 } else if (con.getType().equals(ParamUtils.TYPE_DATE)) {
                     sql.append(" to_date(:idx").append(String.valueOf(index++))
-                            .append(", '").append(ParamUtils.ddMMyyyy).append("')");
+                            .append(", '").append(ParamUtils.ddMMyyyyHHmmss).append("')");
                 } else if (con.getOperator().equals(ParamUtils.OP_IN)) {
                     sql.append("( :idx").append(String.valueOf(index++)).append(" )");
                 } else {
@@ -524,11 +532,11 @@ public class BaseFWDAOImpl<T extends BaseFWModel, ID extends Serializable> {
                 if (con.getType().equals(ParamUtils.TYPE_STRING)) {
                     sql.append(":idx").append(String.valueOf(index++));
                     if (con.getOperator().equals(ParamUtils.OP_LIKE)) {
-                        sql.append(" ESCAPE '\\' ");
+//                        sql.append(" ESCAPE '\\' "); 
                     }
                 } else if (con.getType().equals(ParamUtils.TYPE_DATE)) {
                     sql.append(" to_date(:idx").append(String.valueOf(index++))
-                            .append(", '").append(ParamUtils.ddMMyyyy).append("')");
+                            .append(", '").append(ParamUtils.ddMMyyyyHHmmss).append("')");
                 } else if (con.getOperator().equals(ParamUtils.OP_IN)) {
                     sql.append(con.getValue());
                 } else {
@@ -568,7 +576,8 @@ public class BaseFWDAOImpl<T extends BaseFWModel, ID extends Serializable> {
     }
 
     public static String genSubQuery(String tableName, String colId, String colName, String value) {
-        return "(select " + colId + tableName + " where " + StringUtils.formatFunction("lower", colName) + " like '" + StringUtils.formatLike(value) + "'  ESCAPE '\\' )";
+//        return "(select " + colId + tableName + " where " + StringUtils.formatFunction("lower", colName) + " like '" + StringUtils.formatLike(value) + "'  ESCAPE '\\' )";
+        return "(select " + colId + tableName + " where " + StringUtils.formatFunction("lower", colName) + " like '" + StringUtils.formatLike(value) + "')";
     }
 
     public Long getTransactionId() {

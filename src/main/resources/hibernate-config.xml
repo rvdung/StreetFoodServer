@@ -5,8 +5,8 @@
 
    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="com.mysql.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://125.212.207.200:3306/StreetFood" />
-        <property name="user" value="streetfood" />
+        <property name="jdbcUrl" value="jdbc:mysql://125.212.207.200:3306/StreetFood?characterEncoding=utf8" />
+        <property name="user" value="streetfoods" />
         <property name="password" value="creatrix#123"/>
         
         <property name="acquireIncrement" value="2"/>
@@ -25,6 +25,9 @@
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.connection.CharSet">utf8</prop>
+                <prop key="hibernate.connection.characterEncoding">utf8</prop>
+                <prop key="hibernate.connection.useUnicode">true</prop>
             </props>
         </property>
         <property name="packagesToScan" value="com.dungnv.streetfood.model"/>
@@ -34,9 +37,9 @@
         </property>        
     </bean>
 
-    <bean id="hibernateSessionFactory" class="com.dungnv.vfw5.base.dao.HibernateSessionFactoryImpl">
+<!--    <bean id="hibernateSessionFactory" class="com.dungnv.vfw5.base.dao.HibernateSessionFactoryImpl">
         <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
+    </bean>-->
 
     <bean id="transactionManager"
           class="org.springframework.orm.hibernate4.HibernateTransactionManager">

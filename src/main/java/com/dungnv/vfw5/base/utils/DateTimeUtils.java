@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  *
@@ -140,12 +141,19 @@ public final class DateTimeUtils {
 
     /**
      *
+     * @param isGMT
      * @return String
      * @throws Exception if error
      */
-    public static String getSysDateTime() throws Exception {
+    public static String getSysDateTime(Boolean isGMT) throws Exception {
+
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        if (isGMT) {
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        }
+        
         try {
             return dateFormat.format(calendar.getTime());
         } catch (Exception e) {
@@ -291,36 +299,15 @@ public final class DateTimeUtils {
         return (obj1 == null || "".equals(obj1.trim()));
     }
 
-    public static String getSysdate(String format) {
-        String selectTocharSysdate = "select to_char(sysdate,'dd/mm/yyyy hh24:mi:ss') from dual";
-        long time = System.currentTimeMillis();
+    public static String getSysdate(String format, Boolean isGMT) {
+        long time = 0L;
+        if (isGMT) {
+            time = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis();
+        } else {
+            time = System.currentTimeMillis();
+        }
         java.sql.Date date = new java.sql.Date(time);
         return convertDateToString(date, format);
     }
 
-    /**
-     *
-     * @param value Date
-     * @return String
-     */
-    public static String date2StringNoSlash(Date value) {
-        if (value != null) {
-            SimpleDateFormat dateNoSlash = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-            return dateNoSlash.format(value);
-        }
-        return "";
-    }
-
-    /**
-     *
-     * @param value Date
-     * @return String
-     */
-    public static String date2ddMMyyyyHHMMss(Date value) {
-        if (value != null) {
-            SimpleDateFormat dateTimeNoSlash = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
-            return dateTimeNoSlash.format(value);
-        }
-        return "";
-    }
 }

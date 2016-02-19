@@ -7,7 +7,7 @@ package com.dungnv.vwf5.base.servicecaller;
 
 import com.opensymphony.xwork2.util.logging.Logger;
 import com.opensymphony.xwork2.util.logging.LoggerFactory;
-import com.dungnv.vwf5.base.utils.Constants;
+import com.dungnv.vfw5.base.utils.Constants;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;

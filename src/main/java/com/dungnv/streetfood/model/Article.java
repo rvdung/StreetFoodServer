@@ -12,6 +12,7 @@ import com.dungnv.vfw5.base.utils.DateTimeUtils;
 import com.dungnv.vfw5.base.utils.ParamUtils;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -57,6 +58,7 @@ public class Article extends BaseFWModel {
 
     //Getters and Setters
     @Id
+    @GeneratedValue
     @Column(name = "id", unique = true, nullable = false)
     public Long getId() {
         return this.id;
@@ -125,7 +127,7 @@ public class Article extends BaseFWModel {
     @Override
     public ArticleDTO toDTO() {
         ArticleDTO dto = new ArticleDTO(
-                id == null ? null : id.toString(), title, content, shortContent, updateTime == null ? null : DateTimeUtils.convertDateToString(updateTime, ParamUtils.ddMMyyyy), updateTimeGmt == null ? null : DateTimeUtils.convertDateToString(updateTimeGmt, ParamUtils.ddMMyyyy), viewCount == null ? null : viewCount.toString()
+                id == null ? null : id.toString(), title, content, shortContent, updateTime == null ? null : DateTimeUtils.convertDateToString(updateTime, ParamUtils.ddMMyyyyHHmmss), updateTimeGmt == null ? null : DateTimeUtils.convertDateToString(updateTimeGmt, ParamUtils.ddMMyyyyHHmmss), viewCount == null ? null : viewCount.toString()
         );
         return dto;
     }

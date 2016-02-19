@@ -127,4 +127,9 @@ public class ResultDTO {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "ResultDTO{" + "id=" + id + ", key=" + key + ", message=" + message + ", quantitySucc=" + quantitySucc + ", quantityFail=" + quantityFail + ", amount=" + amount + ", amountIssue=" + amountIssue + '}';
+    }
+
 }

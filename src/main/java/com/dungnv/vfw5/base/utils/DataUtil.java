@@ -648,6 +648,29 @@ public final class DataUtil {
         return Splitter.on(",").trimResults().omitEmptyStrings().splitToList(input);
     }
 
+    public static String formatInputList(List<String> list) {
+        if (list == null) {
+            return null;
+        }
+        return formatInputList(list.toArray(new String[list.size()]));
+    }
+
+    public static String formatInputList(String[] list) {
+        if (list == null) {
+            return null;
+        }
+        StringBuilder strBf = new StringBuilder();
+        int size = list.length;
+        if (size > 0) {
+            strBf.append(list[0]);
+            for (int i = 1; i < size; i++) {
+                strBf.append(",").append(list[i]);
+            }
+        }
+
+        return strBf.toString();
+    }
+
     public static Long[] parseInputListLong(String input) {
 
         List<String> lstString = parseInputList(input);
@@ -700,4 +723,29 @@ public final class DataUtil {
 //        }        
 //        return mapGoodsDTO;               
 //    }
+    public static Locale getLocale(String localeCode, String countryCode) {
+        if (StringUtils.isNullOrEmpty(localeCode) && StringUtils.isNullOrEmpty(countryCode)) {
+            return new Locale("en-US");
+        }
+        if (StringUtils.isNullOrEmpty(countryCode)) {
+            return new Locale(localeCode.trim());
+        }
+        return new Locale(localeCode.trim() + "-" + countryCode.trim());
+    }
+
+    public static List<String> removeDuplicateString(List<String> list, Boolean ignoreCase) {
+        List<String> tempList = new ArrayList<>();
+        Set<String> tempSet = new HashSet<>();
+
+        for (String str : list) {
+            String tempStr = ignoreCase ? str.trim().toLowerCase() : str.trim();
+            if (tempSet.contains(tempStr)) {
+                continue;
+            } else {
+                tempSet.add(tempStr);
+                tempList.add(str.trim());
+            }
+        }
+        return tempList;
+    }
 }

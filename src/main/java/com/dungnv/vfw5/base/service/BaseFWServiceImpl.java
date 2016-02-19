@@ -228,7 +228,7 @@ public class BaseFWServiceImpl<TDAO extends BaseFWDAOImpl, TDTO extends BaseFWDT
      * compared by "like", number by "=" date by ">=" or "<=" depend on
      * attribute name
      */
-    /*
+ /*
      neu kieu du lieu la number , date thi order by
      kieu du lieu la string thi order by tieng viet
      */
@@ -338,53 +338,51 @@ public class BaseFWServiceImpl<TDAO extends BaseFWDAOImpl, TDTO extends BaseFWDT
                                 System.out.println("PrepareCondition Error: " + e.getMessage());
                             }
                         }
-                    } else {
-                        if (ParamUtils.TYPE_STRING.indexOf(returnType) >= 0) {
-                            if (!value.equals(String.valueOf(ParamUtils.DEFAULT_VALUE))) {
-                                String stringValue = value.toString();
-                                String opCompare = ParamUtils.OP_LIKE;
-                                String valueCompare = StringUtils.formatLike(stringValue);
-                                Column column = methods[i].getAnnotation(Column.class);
-                                if (StringUtils.validString(column.columnDefinition())
-                                        && column.columnDefinition().equals("param")) {
-                                    opCompare = ParamUtils.OP_EQUAL;
-                                    valueCompare = stringValue.toLowerCase(Locale.ENGLISH);
-                                }
-                                if (!stringValue.trim().equals("")) {
-                                    lstCondition.add(new ConditionBean(
-                                            StringUtils.formatFunction("lower", ReflectUtils.getColumnBeanName(methods[i])),
-                                            opCompare,
-                                            valueCompare,
-                                            ParamUtils.TYPE_STRING));
-                                }
+                    } else if (ParamUtils.TYPE_STRING.indexOf(returnType) >= 0) {
+                        if (!value.equals(String.valueOf(ParamUtils.DEFAULT_VALUE))) {
+                            String stringValue = value.toString();
+                            String opCompare = ParamUtils.OP_LIKE;
+                            String valueCompare = StringUtils.formatLike(stringValue);
+                            Column column = methods[i].getAnnotation(Column.class);
+                            if (StringUtils.validString(column.columnDefinition())
+                                    && column.columnDefinition().equals("param")) {
+                                opCompare = ParamUtils.OP_EQUAL;
+                                valueCompare = stringValue.toLowerCase(Locale.ENGLISH);
                             }
-                        } else if (ParamUtils.TYPE_NUMBER.indexOf(returnType) >= 0) {
-                            if (!value.toString().equals(String.valueOf(ParamUtils.DEFAULT_VALUE))) {
+                            if (!stringValue.trim().equals("")) {
                                 lstCondition.add(new ConditionBean(
-                                        ReflectUtils.getColumnBeanName(methods[i]),
-                                        ParamUtils.OP_EQUAL,
-                                        value.toString(),
-                                        ParamUtils.TYPE_NUMBER));
+                                        StringUtils.formatFunction("lower", ReflectUtils.getColumnBeanName(methods[i])),
+                                        opCompare,
+                                        valueCompare,
+                                        ParamUtils.TYPE_STRING));
                             }
-                        } else if (ParamUtils.TYPE_DATE.indexOf(returnType) >= 0) {
-                            Date dateValue = (Date) value;
-                            String methodName = methods[i].getName();
-                            String operator = ParamUtils.OP_EQUAL;
-                            if (methodName.indexOf("From") >= 0
-                                    || methodName.indexOf("Begin") >= 0
-                                    || methodName.indexOf("Sta") >= 0) {
-                                operator = ParamUtils.OP_GREATER_EQUAL;
-                            } else if (methodName.indexOf("To") >= 0
-                                    || methodName.indexOf("End") >= 0
-                                    || methodName.indexOf("Last") >= 0) {
-                                operator = ParamUtils.OP_LESS_EQUAL;
-                            }
-                            lstCondition.add(new ConditionBean(
-                                    StringUtils.formatFunction("trunc", ReflectUtils.getColumnBeanName(methods[i])),
-                                    operator,
-                                    StringUtils.formatDate(dateValue),
-                                    ParamUtils.TYPE_DATE));
                         }
+                    } else if (ParamUtils.TYPE_NUMBER.indexOf(returnType) >= 0) {
+                        if (!value.toString().equals(String.valueOf(ParamUtils.DEFAULT_VALUE))) {
+                            lstCondition.add(new ConditionBean(
+                                    ReflectUtils.getColumnBeanName(methods[i]),
+                                    ParamUtils.OP_EQUAL,
+                                    value.toString(),
+                                    ParamUtils.TYPE_NUMBER));
+                        }
+                    } else if (ParamUtils.TYPE_DATE.indexOf(returnType) >= 0) {
+                        Date dateValue = (Date) value;
+                        String methodName = methods[i].getName();
+                        String operator = ParamUtils.OP_EQUAL;
+                        if (methodName.indexOf("From") >= 0
+                                || methodName.indexOf("Begin") >= 0
+                                || methodName.indexOf("Sta") >= 0) {
+                            operator = ParamUtils.OP_GREATER_EQUAL;
+                        } else if (methodName.indexOf("To") >= 0
+                                || methodName.indexOf("End") >= 0
+                                || methodName.indexOf("Last") >= 0) {
+                            operator = ParamUtils.OP_LESS_EQUAL;
+                        }
+                        lstCondition.add(new ConditionBean(
+                                StringUtils.formatFunction("trunc", ReflectUtils.getColumnBeanName(methods[i])),
+                                operator,
+                                StringUtils.formatDate(dateValue),
+                                ParamUtils.TYPE_DATE));
                     }
                 } catch (IllegalAccessException iae) {
                     System.out.println("PrepareCondition Error: " + iae.getMessage());
@@ -417,6 +415,11 @@ public class BaseFWServiceImpl<TDAO extends BaseFWDAOImpl, TDTO extends BaseFWDT
     @Override
     public String update(TDTO tForm) {
         return gettDAO().update(tForm.toModel());
+    }
+
+    @Override
+    public String updateMerge(TDTO tDTO) {
+        return gettDAO().updateMerge(tDTO.toModel());
     }
 
     public Map<Long, String> getMap() {
@@ -541,4 +544,5 @@ public class BaseFWServiceImpl<TDAO extends BaseFWDAOImpl, TDTO extends BaseFWDT
         }
         return gettDAO().find(tModel.getModelName(), lstCondition).isEmpty() ? false : true;
     }
+
 }

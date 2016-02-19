@@ -12,6 +12,7 @@ import java.util.List;
  *
  * @author kdvt_binhnt22@viettel.com.vn
  * @version 1.0
+ * @param <TBO>
  * @since May 2012
  */
 public abstract class BaseFWDTO<TBO extends BaseFWModel> implements BaseFWDTOInterface<TBO> {

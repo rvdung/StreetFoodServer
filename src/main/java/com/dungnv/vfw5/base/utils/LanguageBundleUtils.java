@@ -88,7 +88,12 @@ public class LanguageBundleUtils {
         } else {
             languageRb = ResourceBundle.getBundle(RESOURCE);
         }
-        return languageRb.getString(key);
+        try {
+            return languageRb.getString(key);
+        } catch (Exception e) {
+            return key;
+        }
+
     }
 
     public static String getStringMessage(Locale locale, String key) {

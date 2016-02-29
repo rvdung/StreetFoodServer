@@ -8,6 +8,7 @@ import com.dungnv.streetfood.dto.DishLanguageDTO;
 import com.dungnv.streetfood.model.DishLanguage;
 import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.service.BaseFWServiceInterface;
+import java.util.List;
 
 /**
  *
@@ -19,7 +20,12 @@ public interface DishLanguageBusinessInterface extends BaseFWServiceInterface<Di
 
     public ResultDTO insertDishLanguage(String userName, String localeCode, String countryCode, String token, DishLanguageDTO dto);
 
+    public ResultDTO insertDishLanguage(String userName, String localeCode, String countryCode, String token//
+            , String dishId, List<DishLanguageDTO> listLanguage);
+
     public ResultDTO updateDishLanguage(String userName, String localeCode, String countryCode, String token, DishLanguageDTO dto);
+    
+    public ResultDTO updateMergeDishLanguage(String userName, String localeCode, String countryCode, String token, DishLanguageDTO dto);
 
     public ResultDTO deleteDishLanguage(String userName, String localeCode, String countryCode, String token, String id);
 }

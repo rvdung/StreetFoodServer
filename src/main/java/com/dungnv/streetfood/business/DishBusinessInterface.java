@@ -8,6 +8,7 @@ import com.dungnv.streetfood.dto.DishDTO;
 import com.dungnv.streetfood.model.Dish;
 import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.service.BaseFWServiceInterface;
+import java.util.List;
 
 /**
  *
@@ -24,4 +25,9 @@ public interface DishBusinessInterface extends BaseFWServiceInterface<DishDTO, D
     public ResultDTO deleteDish(String userName, String localeCode, String countryCode, String token, String id);
 
     public ResultDTO activeDish(String userName, String localeCode, String countryCode, String token, String id, Boolean active);
+
+    public List<DishDTO> getListDishDTOLess(String userName, String localeCode, String countryCode, String token, //
+            DishDTO dishDTO, int rowStart, int maxRow, boolean isCount, String sortType, String sortFieldList);
+
+    public DishDTO getDishDetail(String userName, String localeCode, String countryCode, String token, String id);
 }

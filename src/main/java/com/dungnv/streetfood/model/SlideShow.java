@@ -128,7 +128,7 @@ public class SlideShow extends BaseFWModel {
         this.validToGmt = validToGmt;
     }
 
-    @Column(name = "order")
+    @Column(name = "orders")
     public Long getOrder() {
         return this.order;
     }

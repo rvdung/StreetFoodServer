@@ -33,6 +33,9 @@ public class ImgDTO extends BaseFWDTO<Img>{
     private String order;
     
     public static String DISH_GROUP_ID = "dishGroupId";
+    public static String RESTAURANT_ID = "restaurantId";
+    public static String ARTICLE_ID = "articleId";
+    public static String DISH_ID = "dishId";
     public static String MODEL_NAME = "Img";
     
     //Constructor

@@ -9,9 +9,7 @@ import com.dungnv.streetfood.dto.DishLanguageDTO;
 import com.dungnv.streetfood.model.DishLanguage;
 import com.dungnv.streetfood.dao.DishLanguageDAO;
 import com.dungnv.streetfood.model.Dish;
-import com.dungnv.streetfood.model.DishGroupLangage;
 import com.dungnv.vfw5.base.dto.ResultDTO;
-import com.dungnv.vfw5.base.pojo.ConditionBean;
 import com.dungnv.vfw5.base.utils.Constants;
 import com.dungnv.vfw5.base.utils.DataUtil;
 import com.dungnv.vfw5.base.utils.LanguageBundleUtils;
@@ -103,6 +101,29 @@ public class DishLanguageBusiness extends BaseFWServiceImpl<DishLanguageDAO, Dis
     }
 
     @Override
+    public ResultDTO updateMergeDishLanguage(String userName, String localeCode, String countryCode, String token, DishLanguageDTO dto) {
+        ResultDTO result = new ResultDTO();
+        locale = DataUtil.getLocale(localeCode, countryCode);
+
+        String validate = validate(locale, dto, Constants.ACTION_TYPE.UPDATE);
+        if (!StringUtils.isNullOrEmpty(validate)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(validate);
+            return result;
+        }
+
+        String resultStr = updateMerge(dto);
+        result.setMessage(resultStr);
+        if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            return result;
+        }
+
+        return result;
+    }
+
+    @Override
     public ResultDTO deleteDishLanguage(String userName, String localeCode, String countryCode, String token, String id) {
         ResultDTO result = new ResultDTO();
         Long ids = Long.valueOf(id);
@@ -119,18 +140,82 @@ public class DishLanguageBusiness extends BaseFWServiceImpl<DishLanguageDAO, Dis
         return result;
     }
 
+    @Override
+    public ResultDTO insertDishLanguage(String userName, String localeCode, String countryCode//
+            , String token, String dishId, List<DishLanguageDTO> listLanguage) {
+        ResultDTO result = new ResultDTO();
+        locale = DataUtil.getLocale(localeCode, countryCode);
+
+        String validate = validate(locale, dishId, listLanguage);
+        if (!StringUtils.isNullOrEmpty(validate)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(validate);
+            return result;
+        }
+
+        // Get all current language
+        DishLanguageDTO dishLanguageCondition = new DishLanguageDTO();
+        dishLanguageCondition.setDishId(String.valueOf(dishId));
+        List<DishLanguageDTO> listCurrLanguage = search(dishLanguageCondition, 0, Integer.MAX_VALUE, "ASC", "id");
+        Map<String, DishLanguageDTO> mapCurrLanguage = new HashMap<>();
+        for (DishLanguageDTO obj : listCurrLanguage) {
+            mapCurrLanguage.put(obj.getLanguageCode(), obj);
+        }
+
+        if (listLanguage != null && !listLanguage.isEmpty()) {
+            for (DishLanguageDTO dishLangDTO : listLanguage) {
+                DishLanguageDTO currLang = mapCurrLanguage.get(dishLangDTO.getLanguageCode());
+                if (currLang == null) {
+                    currLang = dishLangDTO;
+                    currLang.setDishId(dishId);
+                    result = insertDishLanguage(userName, localeCode, countryCode, token, currLang);
+
+                    if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
+                        TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+                        return result;
+                    }
+                } else {
+                    currLang.setName(dishLangDTO.getName());
+                    currLang.setShortDescription(dishLangDTO.getShortDescription());
+                    currLang.setLongDescription(dishLangDTO.getLongDescription());
+
+                    result = updateMergeDishLanguage(userName, localeCode, countryCode, token, currLang);
+                    if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
+                        TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+                        return result;
+                    }
+                    // remove exist language
+                    listCurrLanguage.remove(currLang);
+                }
+            }
+        }
+
+        //remove unused tag_dish record
+        for (DishLanguageDTO tag : listCurrLanguage) {
+            result = deleteDishLanguage(userName, localeCode, countryCode, token, tag.getId());
+            if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
+                TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
+        }
+        result.setMessage(ParamUtils.SUCCESS);
+
+        return result;
+    }
+
     private String validate(Locale locale, DishLanguageDTO dto, String action) {
 
         if (dto == null) {
             return LanguageBundleUtils.getString(locale, "message.dishLanguage.model.null");
         }
-        
+
         if (Constants.ACTION_TYPE.UPDATE.equals(action)) {
-            if(StringUtils.isNullOrEmpty(dto.getId())){
+            if (StringUtils.isNullOrEmpty(dto.getId())) {
                 return LanguageBundleUtils.getString(locale, "message.dishLanguage.id.null");
             }
         }
-        
+
         if (StringUtils.isNullOrEmpty(dto.getName())) {
             return LanguageBundleUtils.getString(locale, "message.dishLanguage.name.null");
         }
@@ -163,6 +248,14 @@ public class DishLanguageBusiness extends BaseFWServiceImpl<DishLanguageDAO, Dis
             return LanguageBundleUtils.getString(locale, "message.dish.id.invalid");
         }
 
+        return null;
+    }
+
+    private String validate(Locale locale, String dishId, List<DishLanguageDTO> listLanguage) {
+        if (dishId == null) {
+            return LanguageBundleUtils.getString(locale, "message.dish.id.null");
+        }
+       
         return null;
     }
 }

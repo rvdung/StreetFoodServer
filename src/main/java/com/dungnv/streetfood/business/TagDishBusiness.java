@@ -20,9 +20,12 @@ import java.util.Locale;
 import java.util.Map;
 import org.hibernate.Session;
 import javax.transaction.Transactional;
+import org.hibernate.SQLQuery;
+import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
+
 /**
  *
  * @author dungnv
@@ -31,8 +34,8 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
  */
 @Service("tagDishBusiness")
 @Transactional
-public class TagDishBusiness extends BaseFWServiceImpl<TagDishDAO, TagDishDTO, TagDish> implements TagDishBusinessInterface{
-	
+public class TagDishBusiness extends BaseFWServiceImpl<TagDishDAO, TagDishDTO, TagDish> implements TagDishBusinessInterface {
+
     @Autowired
     private TagDishDAO tagDishDAO;
     @Autowired
@@ -44,11 +47,12 @@ public class TagDishBusiness extends BaseFWServiceImpl<TagDishDAO, TagDishDTO, T
         tModel = new TagDish();
         tDAO = tagDishDAO;
     }
+
     @Override
     public TagDishDAO gettDAO() {
         return tagDishDAO;
     }
-    
+
     public TagDishBusiness(Session session) {
         this.session = session;
         tModel = new TagDish();
@@ -73,7 +77,7 @@ public class TagDishBusiness extends BaseFWServiceImpl<TagDishDAO, TagDishDTO, T
         List<TagDishDTO> listCurrTag = search(tagDishCondition, 0, Integer.MAX_VALUE, "ASC", "id");
 
         if (listTag != null && !listTag.isEmpty()) {
-             listTag = DataUtil.removeDuplicateString(listTag, Boolean.TRUE);
+            listTag = DataUtil.removeDuplicateString(listTag, Boolean.TRUE);
             Map<String, String> mapTagId = tagsBusiness.getMapTagsByName(listTag);
             for (String tagStr : listTag) {
                 String tagId = mapTagId.get(tagStr.toLowerCase());
@@ -109,8 +113,13 @@ public class TagDishBusiness extends BaseFWServiceImpl<TagDishDAO, TagDishDTO, T
 
         //remove unused tag_dish record
         for (TagDishDTO tag : listCurrTag) {
-            deleteTagDish(userName, localeCode, countryCode, token, tag.getId());
+            result = deleteTagDish(userName, localeCode, countryCode, token, tag.getId());
+            if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
+                TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
         }
+        result.setMessage(ParamUtils.SUCCESS);
 
         return result;
     }
@@ -143,6 +152,14 @@ public class TagDishBusiness extends BaseFWServiceImpl<TagDishDAO, TagDishDTO, T
         result.setMessage(resultStr);
         return result;
     }
+
+    @Override
+    public List<String> getTagsListByDish(String userName, String localeCode, String countryCode, String token, String id) {
+        SQLQuery query = gettDAO().getSession().createSQLQuery("select t.name id from tags t "
+                + "inner join tag_dish l on t.id =l.tag_id"
+                + " where l.dish_id = ? ");
+        query.addScalar("id", StringType.INSTANCE);
+        query.setLong(0, Long.valueOf(id));
+        return query.list();
+    }
 }
-
-

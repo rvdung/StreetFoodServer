@@ -37,8 +37,12 @@ public class DishDTO extends BaseFWDTO<Dish> {
     private String rating;
     private String imgId;
 
+    private List<CategoryDTO> listCategory;
     private List<DishLanguageDTO> listLanguage;
     private List<String> listTag;
+    private List<String> listImgUrl;
+    private String imageId;
+    private String imageUrl;
 
     //Constructor
     public DishDTO() {
@@ -61,6 +65,38 @@ public class DishDTO extends BaseFWDTO<Dish> {
         this.rating = rating;
     }
     //Getters and setters
+
+    public List<CategoryDTO> getListCategory() {
+        return listCategory;
+    }
+
+    public void setListCategory(List<CategoryDTO> listCategory) {
+        this.listCategory = listCategory;
+    }
+
+    public List<String> getListImgUrl() {
+        return listImgUrl;
+    }
+
+    public void setListImgUrl(List<String> listImgUrl) {
+        this.listImgUrl = listImgUrl;
+    }
+
+    public String getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(String imageId) {
+        this.imageId = imageId;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public void setId(String id) {
         this.id = id;

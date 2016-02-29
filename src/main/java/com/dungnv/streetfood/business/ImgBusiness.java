@@ -186,7 +186,7 @@ public class ImgBusiness extends BaseFWServiceImpl<ImgDAO, ImgDTO, Img> implemen
                             break;
                     }
 
-                    result = insertImg(userName, localeCode, countryCode, token, imgDTO);
+                    result = insertImg(userName, localeCode, countryCode, token, currDTO);
                 }
                 if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
                     TransactionInterceptor.currentTransactionStatus().setRollbackOnly();

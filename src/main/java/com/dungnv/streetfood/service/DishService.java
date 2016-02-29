@@ -26,7 +26,6 @@ public interface DishService {
     public List<DishDTO> getListDishDTO(@WebParam(name="dishDTO") DishDTO dishDTO,@WebParam(name="rowStart") int rowStart,@WebParam(name="maxRow") int maxRow,@WebParam(name="sortType") String sortType,@WebParam(name="sortFieldList") String sortFieldList);
     //
     @WebMethod(operationName = "updateDish")
-    
     public String updateDish(@WebParam(name = "dishDTO") DishDTO dishDTO);
     //
     @WebMethod(operationName = "deleteDish")

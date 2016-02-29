@@ -261,7 +261,7 @@ public class Restaurant extends BaseFWModel {
     }
 
     @Column(name = "operating_time_start")
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getOperatingTimeStart() {
         return this.operatingTimeStart;
     }
@@ -271,7 +271,7 @@ public class Restaurant extends BaseFWModel {
     }
 
     @Column(name = "operating_time_end")
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getOperatingTimeEnd() {
         return this.operatingTimeEnd;
     }
@@ -368,7 +368,25 @@ public class Restaurant extends BaseFWModel {
     @Override
     public RestaurantDTO toDTO() {
         RestaurantDTO dto = new RestaurantDTO(
-                id == null ? null : id.toString(), name, lon == null ? null : lon.toString(), lat == null ? null : lat.toString(), videoUrl, address, phoneNumber, siteUrl, introduce, priceFromVn == null ? null : priceFromVn.toString(), priceFromEn == null ? null : priceFromEn.toString(), priceToVn == null ? null : priceToVn.toString(), priceToEn == null ? null : priceToEn.toString(), carParking == null ? null : carParking.toString(), motobikeParking == null ? null : motobikeParking.toString(), capacity, waitingTime == null ? null : waitingTime.toString(), operatingTimeStart == null ? null : operatingTimeStart.toString(), operatingTimeEnd == null ? null : operatingTimeEnd.toString(), restaurantStatus == null ? null : restaurantStatus.toString(), restaurantUpdateTime == null ? null : DateTimeUtils.convertDateToString(restaurantUpdateTime, ParamUtils.ddMMyyyyHHmmss), restaurantCreateTime == null ? null : DateTimeUtils.convertDateToString(restaurantCreateTime, ParamUtils.ddMMyyyyHHmmss), restaurantUpdateTimeGmt == null ? null : DateTimeUtils.convertDateToString(restaurantUpdateTimeGmt, ParamUtils.ddMMyyyyHHmmss), restaurantCreateTimeGmt == null ? null : DateTimeUtils.convertDateToString(restaurantCreateTimeGmt, ParamUtils.ddMMyyyyHHmmss), viewCount == null ? null : viewCount.toString(), commentCount == null ? null : commentCount.toString(), shareCount == null ? null : shareCount.toString(), rating == null ? null : rating.toString()
+                id == null ? null : id.toString(), name, lon == null ? null : lon.toString()//
+                , lat == null ? null : lat.toString(), videoUrl, address, phoneNumber//
+                , siteUrl, introduce, priceFromVn == null ? null : priceFromVn.toString()//
+                , priceFromEn == null ? null : priceFromEn.toString()//
+                , priceToVn == null ? null : priceToVn.toString()//
+                , priceToEn == null ? null : priceToEn.toString()//
+                , carParking == null ? null : carParking.toString()//
+                , motobikeParking == null ? null : motobikeParking.toString()//
+                , capacity, waitingTime == null ? null : waitingTime.toString()//
+                , operatingTimeStart == null ? null : DateTimeUtils.convertDateToString(operatingTimeStart, ParamUtils.HHmmss)//
+                , operatingTimeEnd == null ? null : DateTimeUtils.convertDateToString(operatingTimeEnd, ParamUtils.HHmmss)//
+                , restaurantStatus == null ? null : restaurantStatus.toString()//
+                , restaurantUpdateTime == null ? null : DateTimeUtils.convertDateToString(restaurantUpdateTime, ParamUtils.ddMMyyyyHHmmss)//
+                , restaurantCreateTime == null ? null : DateTimeUtils.convertDateToString(restaurantCreateTime, ParamUtils.ddMMyyyyHHmmss)//
+                , restaurantUpdateTimeGmt == null ? null : DateTimeUtils.convertDateToString(restaurantUpdateTimeGmt, ParamUtils.ddMMyyyyHHmmss)//
+                , restaurantCreateTimeGmt == null ? null : DateTimeUtils.convertDateToString(restaurantCreateTimeGmt, ParamUtils.ddMMyyyyHHmmss)//
+                , viewCount == null ? null : viewCount.toString()//
+                , commentCount == null ? null : commentCount.toString(), shareCount == null ? null : shareCount.toString()//
+                , rating == null ? null : rating.toString()
         );
         return dto;
     }

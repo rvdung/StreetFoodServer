@@ -113,7 +113,11 @@ public class TagCategoryBusiness extends BaseFWServiceImpl<TagCategoryDAO, TagCa
 
         //remove unused tag_category record
         for (TagCategoryDTO tag : listCurrTag) {
-            deleteTagCategory(userName, localeCode, countryCode, token, tag.getId());
+            result = deleteTagCategory(userName, localeCode, countryCode, token, tag.getId());
+            if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
+                TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+                return result;
+            }
         }
         result.setMessage(ParamUtils.SUCCESS);
 

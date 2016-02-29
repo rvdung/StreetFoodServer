@@ -48,6 +48,8 @@ public final class ParamUtils {
     public static final String LOGIC_AND = " and ";
     public static final String ddMMyyyy = "dd/MM/yyyy";
     public static final String ddMMyyyyHHmmss = "dd/MM/yyyy HH:mm:ss";
+    public static final String HHmmss = "HH:mm:ss";
+    public static final String HHmm = "HH:mm";
     //  NAME OF OPERATOR
     public static final String NAME_EQUAL = "NAME_EQUAL";
     public static final String NAME_LESS_EQUAL = "NAME_LESS_EQUAL";

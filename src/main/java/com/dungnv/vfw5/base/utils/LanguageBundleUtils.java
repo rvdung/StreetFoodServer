@@ -21,9 +21,9 @@ public class LanguageBundleUtils {
     /**
      * RESOURCE.
      */
-    //private static final String RESOURCE = "com/viettel/config/ ";
-    private static final String RESOURCE = "com/viettel/config/message/Language";
-    private static final String RESOURCEMESSAGE = "com/viettel/config/message/Message";
+    //private static final String RESOURCE = "com.dungnv/config/ ";
+    private static final String RESOURCE = "com/dungnv/config/message/Language";
+    private static final String RESOURCEMESSAGE = "com/dungnv/config/message/Message";
     /**
      * local.
      */

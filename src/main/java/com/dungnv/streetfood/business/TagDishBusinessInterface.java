@@ -25,4 +25,6 @@ public interface TagDishBusinessInterface extends BaseFWServiceInterface<TagDish
     public ResultDTO updateTagDish(String userName, String localeCode, String countryCode, String token, TagDishDTO dto);
 
     public ResultDTO deleteTagDish(String userName, String localeCode, String countryCode, String token, String id);
+    
+    public List<String> getTagsListByDish(String userName, String localeCode, String countryCode, String token, String id);
 }

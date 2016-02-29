@@ -26,6 +26,12 @@ public class CategoryDishDTO extends BaseFWDTO<CategoryDish>{
     private String dishId;
     private String dishIdName;
     
+    public final static String CATEGORY_ID = "categoryId";
+    public final static String DISH_ID = "dishId";
+    public final static String MODEL_NAME = "CategoryDish";
+    
+    
+    
     //Constructor
 	public CategoryDishDTO() {
 		setDefaultSortField("id");	

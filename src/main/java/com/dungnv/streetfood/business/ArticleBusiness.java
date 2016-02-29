@@ -9,6 +9,8 @@ import com.dungnv.streetfood.dao.ArticleDAO;
 import com.dungnv.streetfood.dto.ImgDTO;
 import com.dungnv.streetfood.dto.ArticleDTO;
 import com.dungnv.streetfood.dto.ArticleLanguageDTO;
+import com.dungnv.streetfood.dto.RestaurantArticleDTO;
+import com.dungnv.streetfood.dto.TagArticleDTO;
 import com.dungnv.streetfood.model.Article;
 import com.dungnv.streetfood.model.ArticleLanguage;
 import com.dungnv.vfw5.base.dto.ResultDTO;
@@ -16,6 +18,7 @@ import com.dungnv.vfw5.base.pojo.ConditionBean;
 import com.dungnv.vfw5.base.utils.Constants;
 import com.dungnv.vfw5.base.utils.DataUtil;
 import com.dungnv.vfw5.base.utils.DateTimeUtils;
+import com.dungnv.vfw5.base.utils.LanguageBundleUtils;
 import com.dungnv.vfw5.base.utils.ParamUtils;
 import com.dungnv.vfw5.base.utils.QueryUtil;
 import com.dungnv.vfw5.base.utils.StringUtils;
@@ -129,8 +132,7 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
 //</editor-fold>
 
         //<editor-fold defaultstate="collapsed" desc="save img">
-        result = imgBusiness.attachImg(userName, localeCode, countryCode, token, dto.getListImgUrl(), dto.getId()
-                , Constants.OBJECT_TYPE.ARTICLE);
+        result = imgBusiness.attachImg(userName, localeCode, countryCode, token, dto.getListImgUrl(), dto.getId(), Constants.OBJECT_TYPE.ARTICLE);
         if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
             TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
             return result;
@@ -190,8 +192,7 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
 //</editor-fold>
 
         //<editor-fold defaultstate="collapsed" desc="save img">
-        result = imgBusiness.attachImg(userName, localeCode, countryCode, token, dto.getListImgUrl()
-                , dto.getId(), Constants.OBJECT_TYPE.ARTICLE);
+        result = imgBusiness.attachImg(userName, localeCode, countryCode, token, dto.getListImgUrl(), dto.getId(), Constants.OBJECT_TYPE.ARTICLE);
         if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
             TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
             return result;
@@ -203,7 +204,85 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
 
     @Override
     public ResultDTO deleteArticle(String userName, String localeCode, String countryCode, String token, String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ResultDTO result = new ResultDTO();
+        Long ids = Long.valueOf(id);
+
+        List<ConditionBean> lstCondition = new ArrayList<ConditionBean>();
+        lstCondition.add(new ConditionBean(
+                ArticleLanguageDTO.ARTICLE_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+
+        // Delete language
+        String resultDeleteLanguage = gettDAO().delete(ArticleLanguageDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteLanguage)
+                && !ParamUtils.FAIL.equals(resultDeleteLanguage)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteLanguage);
+            return result;
+        }
+
+        // Delete Tag
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                TagArticleDTO.ARTICLE_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteTag = gettDAO().delete(TagArticleDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteTag)
+                && !ParamUtils.FAIL.equals(resultDeleteTag)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteTag);
+            return result;
+        }
+
+        // Delete IMG
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                ImgDTO.ARTICLE_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteImg = gettDAO().delete(ImgDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteImg)
+                && !ParamUtils.FAIL.equals(resultDeleteImg)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteImg);
+            return result;
+        }
+
+        // Delete Restaurant Article
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                RestaurantArticleDTO.ARTICLE_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteArticleArticle = gettDAO().delete(RestaurantArticleDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteArticleArticle)
+                && !ParamUtils.FAIL.equals(resultDeleteArticleArticle)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteArticleArticle);
+            return result;
+        }
+
+        // delete model
+        String resultDelete = delete(ids);
+        if (!ParamUtils.SUCCESS.equals(resultDelete)
+                && !ParamUtils.FAIL.equals(resultDelete)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDelete);
+            return result;
+        }
+        result.setMessage(ParamUtils.SUCCESS);
+        return result;
     }
 
     @Override
@@ -344,7 +423,29 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
         return result;
     }
 
-    private String validate(Locale locale, ArticleDTO dto, String INSERT) {
+    private String validate(Locale locale, ArticleDTO dto, String action) {
+        if (dto == null) {
+            return LanguageBundleUtils.getString(locale, "message.article.model.null");
+        }
+        if (dto.getTitle() == null) {
+            return LanguageBundleUtils.getString(locale, "message.article.title.null");
+        }
+        if (dto.getTitle().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.article.title.overLength.255");
+        }
+
+        if (dto.getShortContent() != null && dto.getShortContent().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.article.shortContent.overLength.255");
+        }
+
+        if (dto.getContent() != null && dto.getContent().length() > 65000) {
+            return LanguageBundleUtils.getString(locale, "message.article.content.overLength.65000");
+        }
+
+        if (dto.getViewCount() != null && !StringUtils.isInteger(dto.getViewCount())) {
+            return LanguageBundleUtils.getString(locale, "message.article.viewCount.invalid");
+        }
+
         return null;
     }
 }

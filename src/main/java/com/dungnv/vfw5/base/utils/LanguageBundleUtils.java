@@ -22,8 +22,7 @@ public class LanguageBundleUtils {
      * RESOURCE.
      */
     //private static final String RESOURCE = "com.dungnv/config/ ";
-    private static final String RESOURCE = "com/dungnv/config/message/Language";
-    private static final String RESOURCEMESSAGE = "com/dungnv/config/message/Message";
+    private static final String RESOURCE        = "com/dungnv/config/message/Language";
     /**
      * local.
      */
@@ -96,14 +95,7 @@ public class LanguageBundleUtils {
 
     }
 
-    public static String getStringMessage(Locale locale, String key) {
-        if (locale != null) {
-            messageRb = ResourceBundle.getBundle(RESOURCEMESSAGE, locale);
-        } else {
-            messageRb = ResourceBundle.getBundle(RESOURCEMESSAGE);
-        }
-        return messageRb.getString(key);
-    }
+ 
 
     public static String getString(String key, String... args) {
         if (local != null) {
@@ -163,27 +155,5 @@ public class LanguageBundleUtils {
         return divName + ParamUtils.SEPARATOR + content;
     }
 
-    public static String getMessage(Locale locale, String key, String... args) {
-        if (locale != null) {
-            messageRb = ResourceBundle.getBundle(RESOURCEMESSAGE, locale);
-        } else {
-            messageRb = ResourceBundle.getBundle(RESOURCEMESSAGE);
-        }
-        MessageFormat msgFormat = new MessageFormat(messageRb.getString(key));
-        Object[] arguments = new Object[args.length];
-        int i = 0;
-        for (Object obj : args) {
-            String arg = (String) obj;
-            try {
-                arg = messageRb.getString((String) obj);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            } finally {
-                arguments[i++] = arg;
-            }
-
-        }
-        String output = msgFormat.format(arguments);
-        return output;
-    }
+   
 }

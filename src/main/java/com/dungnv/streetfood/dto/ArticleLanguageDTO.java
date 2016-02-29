@@ -26,6 +26,10 @@ public class ArticleLanguageDTO extends BaseFWDTO<ArticleLanguage> {
     private String content;
     private String shortContent;
     private String languageCode;
+    
+    
+    public final static String ARTICLE_ID = "articleId";
+    public final static String MODEL_NAME = "ArticleLanguage";
 
     //Constructor
     public ArticleLanguageDTO() {

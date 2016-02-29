@@ -223,6 +223,15 @@ public class ArticleLanguageBusiness extends BaseFWServiceImpl<ArticleLanguageDA
             return LanguageBundleUtils.getString(locale, "message.articleLanguage.title.overLength.255");
         }
 
+        if (dto.getShortContent() != null && dto.getShortContent().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.articleLanguage.shortContent.overLength.255");
+        }
+
+        if (dto.getContent() != null && dto.getContent().length() > 65000) {
+            return LanguageBundleUtils.getString(locale, "message.articleLanguage.content.overLength.65000");
+        }
+
+        // constraint
         if (StringUtils.isNullOrEmpty(dto.getArticleId())) {
             return LanguageBundleUtils.getString(locale, "message.article.id.null");
         }
@@ -250,7 +259,7 @@ public class ArticleLanguageBusiness extends BaseFWServiceImpl<ArticleLanguageDA
 
         return null;
     }
-    
+
     private String validate(Locale locale, String articleId, List<ArticleLanguageDTO> listLanguage) {
         if (articleId == null) {
             return LanguageBundleUtils.getString(locale, "message.article.id.null");

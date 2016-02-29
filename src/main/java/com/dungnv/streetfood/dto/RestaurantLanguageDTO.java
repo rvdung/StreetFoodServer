@@ -28,6 +28,10 @@ public class RestaurantLanguageDTO extends BaseFWDTO<RestaurantLanguage>{
     private String restaurantId;
     private String restaurantIdName;
     private static long changedTime = 0;
+    
+    public final static String RESTAURANT_ID = "restaurantId";
+    public final static String MODEL_NAME = "RestaurantLanguage";
+    
     //Constructor
 	public RestaurantLanguageDTO() {
 		setDefaultSortField("id");	

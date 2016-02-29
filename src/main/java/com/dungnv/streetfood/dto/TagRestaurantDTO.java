@@ -26,6 +26,10 @@ public class TagRestaurantDTO extends BaseFWDTO<TagRestaurant>{
     private String restaurantId;
     private String restaurantIdName;
     private static long changedTime = 0;
+    
+    
+    public final static String RESTAURANT_ID = "restaurantId";
+    public final static String MODEL_NAME = "TagRestaurant";
     //Constructor
 	public TagRestaurantDTO() {
 		setDefaultSortField("id");	

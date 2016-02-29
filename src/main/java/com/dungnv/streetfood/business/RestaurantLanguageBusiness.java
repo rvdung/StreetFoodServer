@@ -221,7 +221,16 @@ public class RestaurantLanguageBusiness extends BaseFWServiceImpl<RestaurantLang
         if (dto.getName().length() > 255) {
             return LanguageBundleUtils.getString(locale, "message.restaurantLanguage.name.overLength.255");
         }
+        
+        if (dto.getAddress() != null && dto.getAddress().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.restaurantLanguage.address.overLength.255");
+        }
+        if (dto.getIntroduce() != null && dto.getIntroduce().length() > 65000) {
+            return LanguageBundleUtils.getString(locale, "message.restaurantLanguage.introduce.overLength.65000");
+        }
 
+        
+        // constraint
         if (StringUtils.isNullOrEmpty(dto.getRestaurantId())) {
             return LanguageBundleUtils.getString(locale, "message.restaurant.id.null");
         }

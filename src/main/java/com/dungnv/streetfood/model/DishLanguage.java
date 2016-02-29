@@ -25,7 +25,7 @@ public class DishLanguage extends BaseFWModel {
 	private Long dishId;
 	private Long languageCode;
         
-        public final static String DISH_ID = "dishId";
+        
 
     //Constructors
 	public DishLanguage() {

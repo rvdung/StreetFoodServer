@@ -172,6 +172,18 @@ public final class StringUtils {
         }
         return true;
     }
+    public static boolean isLongtitude(String str) {
+        if (str == null || !str.matches("^(\\+|-)?(?:180(?:(?:\\.0{1,10})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\\.[0-9]{1,10})?))$")) {
+            return false;
+        }
+        return true;
+    }
+    public static boolean isLatitude(String str) {
+        if (str == null || !str.matches("^(\\+|-)?(?:90(?:(?:\\.0{1,10})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,10})?))$")) {
+            return false;
+        }
+        return true;
+    }
 
     public static String formatString(String str) {
         return " '" + str.trim().toLowerCase() + "'";

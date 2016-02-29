@@ -120,50 +120,6 @@ public class DishGroupLangageBusiness extends BaseFWServiceImpl<DishGroupLangage
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private String validate(Locale locale, DishGroupLangageDTO dto, String action) {
-
-        if (dto == null) {
-            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.model.null");
-        }
-        if (StringUtils.isNullOrEmpty(dto.getName())) {
-            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.name.null");
-        }
-        if (dto.getName().length() > 255) {
-            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.name.overLength.255");
-        }
-
-        if (dto.getDescription() != null && dto.getDescription().length() > 65000) {
-            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.name.overLength.65000");
-        }
-
-        if (StringUtils.isNullOrEmpty(dto.getDishGroupId())) {
-            return LanguageBundleUtils.getString(locale, "message.category.id.null");
-        }
-
-        if (StringUtils.isNullOrEmpty(dto.getLanguageCode())) {
-            return LanguageBundleUtils.getString(locale, "message.locale.id.null");
-        }
-
-        try {
-            com.dungnv.streetfood.model.LocaleModel localeModel = localeBusiness.findById(Long.valueOf(dto.getLanguageCode()));
-            if (localeModel == null) {
-                return LanguageBundleUtils.getString(locale, "message.locale.id.notExist");
-            }
-        } catch (NumberFormatException e) {
-            return LanguageBundleUtils.getString(locale, "message.locale.id.invalid");
-        }
-        try {
-            Category category = categoryBusiness.findById(Long.valueOf(dto.getDishGroupId()));
-            if (category == null) {
-                return LanguageBundleUtils.getString(locale, "message.category.id.notExist");
-            }
-        } catch (NumberFormatException e) {
-            return LanguageBundleUtils.getString(locale, "message.category.id.invalid");
-        }
-
-        return null;
-    }
-
     @Override
     public ResultDTO insertDishGroupLangage(String userName, String localeCode, String countryCode, String token, Long categoryId, List<DishGroupLangageDTO> listDTO) {
         ResultDTO result = new ResultDTO();
@@ -214,6 +170,51 @@ public class DishGroupLangageBusiness extends BaseFWServiceImpl<DishGroupLangage
         result.setMessage(ParamUtils.SUCCESS);
 
         return result;
+    }
+
+    private String validate(Locale locale, DishGroupLangageDTO dto, String action) {
+
+        if (dto == null) {
+            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.model.null");
+        }
+        if (StringUtils.isNullOrEmpty(dto.getName())) {
+            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.name.null");
+        }
+        if (dto.getName().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.name.overLength.255");
+        }
+
+        if (dto.getDescription() != null && dto.getDescription().length() > 65000) {
+            return LanguageBundleUtils.getString(locale, "message.dishGroupLangage.name.overLength.65000");
+        }
+
+        if (StringUtils.isNullOrEmpty(dto.getDishGroupId())) {
+            return LanguageBundleUtils.getString(locale, "message.category.id.null");
+        }
+
+        if (StringUtils.isNullOrEmpty(dto.getLanguageCode())) {
+            return LanguageBundleUtils.getString(locale, "message.locale.id.null");
+        }
+
+        try {
+            com.dungnv.streetfood.model.LocaleModel localeModel = localeBusiness.findById(Long.valueOf(dto.getLanguageCode()));
+            if (localeModel == null) {
+                return LanguageBundleUtils.getString(locale, "message.locale.id.notExist");
+            }
+        } catch (NumberFormatException e) {
+            return LanguageBundleUtils.getString(locale, "message.locale.id.invalid");
+        }
+        
+        try {
+            Category category = categoryBusiness.findById(Long.valueOf(dto.getDishGroupId()));
+            if (category == null) {
+                return LanguageBundleUtils.getString(locale, "message.category.id.notExist");
+            }
+        } catch (NumberFormatException e) {
+            return LanguageBundleUtils.getString(locale, "message.category.id.invalid");
+        }
+
+        return null;
     }
 
 }

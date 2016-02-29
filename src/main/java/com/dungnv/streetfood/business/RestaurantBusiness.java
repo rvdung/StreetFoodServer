@@ -8,8 +8,12 @@ import com.dungnv.vfw5.base.service.BaseFWServiceImpl;
 import com.dungnv.streetfood.dto.RestaurantDTO;
 import com.dungnv.streetfood.model.Restaurant;
 import com.dungnv.streetfood.dao.RestaurantDAO;
+import com.dungnv.streetfood.dto.CommentDTO;
 import com.dungnv.streetfood.dto.ImgDTO;
+import com.dungnv.streetfood.dto.RestaurantArticleDTO;
+import com.dungnv.streetfood.dto.RestaurantDishDetailDTO;
 import com.dungnv.streetfood.dto.RestaurantLanguageDTO;
+import com.dungnv.streetfood.dto.TagRestaurantDTO;
 import com.dungnv.streetfood.model.RestaurantLanguage;
 import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.pojo.ConditionBean;
@@ -17,6 +21,7 @@ import com.dungnv.vfw5.base.utils.Constants;
 import com.dungnv.vfw5.base.utils.DataUtil;
 import com.dungnv.vfw5.base.utils.DateTimeUtils;
 import com.dungnv.vfw5.base.utils.LanguageBundleUtils;
+import com.dungnv.vfw5.base.utils.NumberUtils;
 import com.dungnv.vfw5.base.utils.ParamUtils;
 import com.dungnv.vfw5.base.utils.QueryUtil;
 import com.dungnv.vfw5.base.utils.StringUtils;
@@ -214,7 +219,117 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
 
     @Override
     public ResultDTO deleteRestaurant(String userName, String localeCode, String countryCode, String token, String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ResultDTO result = new ResultDTO();
+        Long ids = Long.valueOf(id);
+
+        List<ConditionBean> lstCondition = new ArrayList<ConditionBean>();
+        lstCondition.add(new ConditionBean(
+                RestaurantLanguageDTO.RESTAURANT_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+
+        // Delete language
+        String resultDeleteLanguage = gettDAO().delete(RestaurantLanguageDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteLanguage)
+                && !ParamUtils.FAIL.equals(resultDeleteLanguage)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteLanguage);
+            return result;
+        }
+
+        // Delete Tag
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                TagRestaurantDTO.RESTAURANT_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteTag = gettDAO().delete(TagRestaurantDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteTag)
+                && !ParamUtils.FAIL.equals(resultDeleteTag)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteTag);
+            return result;
+        }
+
+        // Delete IMG
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                ImgDTO.RESTAURANT_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteImg = gettDAO().delete(ImgDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteImg)
+                && !ParamUtils.FAIL.equals(resultDeleteImg)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteImg);
+            return result;
+        }
+
+        // Delete COMMENT
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                CommentDTO.RESTAURANT_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteComment = gettDAO().delete(CommentDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteComment)
+                && !ParamUtils.FAIL.equals(resultDeleteComment)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteComment);
+            return result;
+        }
+
+        // Delete Restaurant DISH
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                RestaurantDishDetailDTO.RESTAURANT_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteRestaurantDish = gettDAO().delete(RestaurantDishDetailDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteRestaurantDish)
+                && !ParamUtils.FAIL.equals(resultDeleteRestaurantDish)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteRestaurantDish);
+            return result;
+        }
+        
+         // Delete Restaurant Article
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                RestaurantArticleDTO.RESTAURANT_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteRestaurantArticle = gettDAO().delete(RestaurantArticleDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteRestaurantArticle)
+                && !ParamUtils.FAIL.equals(resultDeleteRestaurantArticle)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteRestaurantArticle);
+            return result;
+        }
+
+        // delete model
+        String resultDelete = delete(ids);
+        if (!ParamUtils.SUCCESS.equals(resultDelete)
+                && !ParamUtils.FAIL.equals(resultDelete)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDelete);
+            return result;
+        }
+        result.setMessage(ParamUtils.SUCCESS);
+        return result;
     }
 
     @Override
@@ -384,6 +499,110 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
             return LanguageBundleUtils.getString(locale, "message.restaurant.name.overLength.255");
         }
 
+        if (dto.getAddress() != null && dto.getAddress().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.address.overLength.255");
+        }
+        if (dto.getIntroduce() != null && dto.getIntroduce().length() > 65000) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.introduce.overLength.65000");
+        }
+
+        if (dto.getViewCount() != null && !StringUtils.isInteger(dto.getViewCount())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.viewCount.invalid");
+        }
+
+        if (dto.getCommentCount() != null && !StringUtils.isInteger(dto.getCommentCount())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.commentCount.invalid");
+        }
+
+        if (dto.getShareCount() != null && !StringUtils.isInteger(dto.getShareCount())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.shareCount.invalid");
+        }
+
+        if (dto.getRating() != null && !StringUtils.isInteger(dto.getRating())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.rating.invalid");
+        }
+
+        if (StringUtils.isNullOrEmpty(dto.getRestaurantStatus())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.status.null");
+        }
+
+        if (!"1".equals(dto.getRestaurantStatus()) && !"0".equals(dto.getRestaurantStatus())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.status.invalid");
+        }
+
+        if (dto.getLon() != null && !StringUtils.isLongtitude(dto.getLon())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.lon.invalid");
+        }
+
+        if (dto.getLat() != null && !StringUtils.isLatitude(dto.getLat())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.lat.invalid");
+        }
+
+        if (dto.getVideoUrl() != null && dto.getVideoUrl().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.videoUrl.overLength.255");
+        }
+
+        if (dto.getPhoneNumber() != null && dto.getPhoneNumber().length() > 100) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.phoneNumber.overLength.100");
+        }
+
+        if (dto.getSiteUrl() != null && dto.getSiteUrl().length() > 100) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.siteUrl.overLength.100");
+        }
+
+        if (!StringUtils.isNullOrEmpty(dto.getCarParking())//
+                && !"1".equals(dto.getCarParking())//
+                && !"0".equals(dto.getCarParking())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.carParking.invalid");
+        }
+
+        if (!StringUtils.isNullOrEmpty(dto.getMotobikeParking())//
+                && !"1".equals(dto.getMotobikeParking())//
+                && !"0".equals(dto.getMotobikeParking())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.motobikeParking.invalid");
+        }
+
+        if (dto.getWaitingTime() != null && !StringUtils.isInteger(dto.getWaitingTime())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.waitingTime.invalid");
+        }
+
+        if (dto.getPriceFromVn() != null && !NumberUtils.isDouble(dto.getPriceFromVn())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.priceFromVn.invalid");
+        }
+
+        if (dto.getPriceToVn() != null && !NumberUtils.isDouble(dto.getPriceToVn())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.priceToVn.invalid");
+        }
+
+        if (!StringUtils.isNullOrEmpty(dto.getPriceFromVn()) && !StringUtils.isNullOrEmpty(dto.getPriceToVn())) {
+            Double priceFromVn = Double.valueOf(dto.getPriceFromVn());
+            Double priceToVn = Double.valueOf(dto.getPriceToVn());
+
+            if (priceFromVn > priceToVn) {
+                return LanguageBundleUtils.getString(locale, "message.restaurant.priceToVn.largerThanPriceFromVn");
+            }
+        }
+
+        if (dto.getPriceFromEn() != null && !NumberUtils.isDouble(dto.getPriceFromEn())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.priceFromEn.invalid");
+        }
+
+        if (dto.getPriceToEn() != null && !NumberUtils.isDouble(dto.getPriceToEn())) {
+            return LanguageBundleUtils.getString(locale, "message.restaurant.priceToEn.invalid");
+        }
+
+        if (!StringUtils.isNullOrEmpty(dto.getPriceFromEn()) && !StringUtils.isNullOrEmpty(dto.getPriceToEn())) {
+            Double priceFromEn = Double.valueOf(dto.getPriceFromEn());
+            Double priceToEn = Double.valueOf(dto.getPriceToEn());
+
+            if (priceFromEn > priceToEn) {
+                return LanguageBundleUtils.getString(locale, "message.restaurant.priceToEn.largerThanPriceFromEn");
+            }
+        }
+
+//    private String capacity;
+//    private Date operatingTimeStart;
+//    private Date operatingTimeEnd;
         return null;
     }
 }

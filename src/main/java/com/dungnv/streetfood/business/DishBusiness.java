@@ -9,8 +9,12 @@ import com.dungnv.streetfood.dto.DishDTO;
 import com.dungnv.streetfood.model.Dish;
 import com.dungnv.streetfood.dao.DishDAO;
 import com.dungnv.streetfood.dto.CategoryDTO;
+import com.dungnv.streetfood.dto.CategoryDishDTO;
+import com.dungnv.streetfood.dto.CommentDTO;
 import com.dungnv.streetfood.dto.DishLanguageDTO;
 import com.dungnv.streetfood.dto.ImgDTO;
+import com.dungnv.streetfood.dto.RestaurantDishDetailDTO;
+import com.dungnv.streetfood.dto.TagDishDTO;
 import com.dungnv.streetfood.model.DishLanguage;
 import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.pojo.ConditionBean;
@@ -48,8 +52,6 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
 
     @Autowired
     private DishDAO dishDAO;
-    @Autowired
-    private CategoryBusinessInterface categoryBusiness;
     @Autowired
     private CategoryDishBusinessInterface categoryDishBusiness;
     @Autowired
@@ -221,7 +223,118 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
 
     @Override
     public ResultDTO deleteDish(String userName, String localeCode, String countryCode, String token, String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ResultDTO result = new ResultDTO();
+        Long ids = Long.valueOf(id);
+
+        List<ConditionBean> lstCondition = new ArrayList<ConditionBean>();
+        
+        // Delete language
+        lstCondition.add(new ConditionBean(
+                DishLanguageDTO.DISH_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+
+        String resultDeleteLanguage = gettDAO().delete(DishLanguageDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteLanguage)
+                && !ParamUtils.FAIL.equals(resultDeleteLanguage)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteLanguage);
+            return result;
+        }
+
+        // Delete Tag
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                TagDishDTO.DISH_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteTag = gettDAO().delete(TagDishDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteTag)
+                && !ParamUtils.FAIL.equals(resultDeleteTag)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteTag);
+            return result;
+        }
+
+        // Delete IMG
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                ImgDTO.DISH_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteImg = gettDAO().delete(ImgDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteImg)
+                && !ParamUtils.FAIL.equals(resultDeleteImg)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteImg);
+            return result;
+        }
+
+        // Delete COMMENT
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                CommentDTO.DISH_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteComment = gettDAO().delete(CommentDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteComment)
+                && !ParamUtils.FAIL.equals(resultDeleteComment)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteComment);
+            return result;
+        }
+
+        // Delete Category Dish
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                CategoryDishDTO.DISH_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteDishDish = gettDAO().delete(CategoryDishDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteDishDish)
+                && !ParamUtils.FAIL.equals(resultDeleteDishDish)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteDishDish);
+            return result;
+        }
+        
+         // Delete Restaurant DISH
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                RestaurantDishDetailDTO.DISH_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteRestaurantRestaurant = gettDAO().delete(RestaurantDishDetailDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteRestaurantRestaurant)
+                && !ParamUtils.FAIL.equals(resultDeleteRestaurantRestaurant)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteRestaurantRestaurant);
+            return result;
+        }
+
+        // delete model
+        String resultDelete = delete(ids);
+        if (!ParamUtils.SUCCESS.equals(resultDelete)
+                && !ParamUtils.FAIL.equals(resultDelete)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDelete);
+            return result;
+        }
+        result.setMessage(ParamUtils.SUCCESS);
+        return result;
     }
 
     @Override
@@ -335,7 +448,6 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
         }
 
         List<DishDTO> list = query.list();
-//        StringUtils.escapeHTMLString(list);
         return list;
     }
 
@@ -351,7 +463,7 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
             // get Language
             List<ConditionBean> lstCondition = new ArrayList<ConditionBean>();
             lstCondition.add(new ConditionBean(
-                    DishLanguage.DISH_ID,
+                    DishLanguageDTO.DISH_ID,
                     ParamUtils.OP_EQUAL,
                     String.valueOf(id),
                     ParamUtils.TYPE_NUMBER));
@@ -369,7 +481,7 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
             // get img
             lstCondition = new ArrayList<>();
             lstCondition.add(new ConditionBean(
-                    DishLanguage.DISH_ID,
+                    ImgDTO.DISH_ID,
                     ParamUtils.OP_EQUAL,
                     String.valueOf(id),
                     ParamUtils.TYPE_NUMBER));
@@ -398,6 +510,42 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
         }
         if (dto.getName().length() > 255) {
             return LanguageBundleUtils.getString(locale, "message.dish.name.overLength.255");
+        }
+
+        if (dto.getShortDescription() != null && dto.getShortDescription().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.dish.shortDescription.overLength.255");
+        }
+
+        if (dto.getLongDescription() != null && dto.getLongDescription().length() > 65000) {
+            return LanguageBundleUtils.getString(locale, "message.dish.longDescription.overLength.65000");
+        }
+
+        if (StringUtils.isNullOrEmpty(dto.getDishStatus())) {
+            return LanguageBundleUtils.getString(locale, "message.dish.status.null");
+        }
+        if (!"1".equals(dto.getDishStatus()) && !"0".equals(dto.getDishStatus())) {
+            return LanguageBundleUtils.getString(locale, "message.dish.status.invalid");
+        }
+
+        if (dto.getViewCount() != null && !StringUtils.isInteger(dto.getViewCount())) {
+            return LanguageBundleUtils.getString(locale, "message.dish.viewCount.invalid");
+        }
+
+        if (dto.getCommentCount() != null && !StringUtils.isInteger(dto.getCommentCount())) {
+            return LanguageBundleUtils.getString(locale, "message.dish.commentCount.invalid");
+        }
+
+        if (dto.getShareCount() != null && !StringUtils.isInteger(dto.getShareCount())) {
+            return LanguageBundleUtils.getString(locale, "message.dish.shareCount.invalid");
+        }
+
+        if (dto.getRating() != null && !StringUtils.isInteger(dto.getRating())) {
+            return LanguageBundleUtils.getString(locale, "message.dish.rating.invalid");
+        }
+
+        Integer rating = Integer.valueOf(dto.getRating());
+        if (rating > 5) {
+            return LanguageBundleUtils.getString(locale, "message.dish.rating.over.5");
         }
 
         return null;

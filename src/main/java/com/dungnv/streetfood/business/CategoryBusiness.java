@@ -8,10 +8,10 @@ import com.dungnv.vfw5.base.service.BaseFWServiceImpl;
 import com.dungnv.streetfood.dto.CategoryDTO;
 import com.dungnv.streetfood.model.Category;
 import com.dungnv.streetfood.dao.CategoryDAO;
+import com.dungnv.streetfood.dto.CategoryDishDTO;
 import com.dungnv.streetfood.dto.DishGroupLangageDTO;
 import com.dungnv.streetfood.dto.ImgDTO;
 import com.dungnv.streetfood.dto.TagCategoryDTO;
-import com.dungnv.streetfood.dto.TagsDTO;
 import com.dungnv.streetfood.model.DishGroupLangage;
 import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.pojo.ConditionBean;
@@ -137,7 +137,7 @@ public class CategoryBusiness extends BaseFWServiceImpl<CategoryDAO, CategoryDTO
         Locale locale = DataUtil.getLocale(localeCode, countryCode);
 
         String validate = validate(locale, dto, Constants.ACTION_TYPE.UPDATE);
-        
+
         String currDate = null;
         String currDateGMT = null;
         try {
@@ -151,7 +151,7 @@ public class CategoryBusiness extends BaseFWServiceImpl<CategoryDAO, CategoryDTO
         }
         dto.setCategoryUpdateTime(currDate);
         dto.setCategoryUpdateTimeGmt(currDateGMT);
-        
+
         if (!StringUtils.isNullOrEmpty(validate)) {
             TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
             result.setMessage(ParamUtils.FAIL);
@@ -233,7 +233,7 @@ public class CategoryBusiness extends BaseFWServiceImpl<CategoryDAO, CategoryDTO
             return result;
         }
 
-        // Delete Tag
+        // Delete IMG
         lstCondition.clear();
         lstCondition.add(new ConditionBean(
                 ImgDTO.DISH_GROUP_ID,
@@ -246,6 +246,22 @@ public class CategoryBusiness extends BaseFWServiceImpl<CategoryDAO, CategoryDTO
             TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
             result.setMessage(ParamUtils.FAIL);
             result.setKey(resultDeleteImg);
+            return result;
+        }
+        
+        // Delete Category Dish
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                CategoryDishDTO.CATEGORY_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteCategoryDish = gettDAO().delete(CategoryDishDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteCategoryDish)
+                && !ParamUtils.FAIL.equals(resultDeleteCategoryDish)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteCategoryDish);
             return result;
         }
 
@@ -271,6 +287,7 @@ public class CategoryBusiness extends BaseFWServiceImpl<CategoryDAO, CategoryDTO
         if (dto == null) {
             return LanguageBundleUtils.getString(locale, "message.category.model.null");
         }
+        
         if (dto.getName() == null) {
             return LanguageBundleUtils.getString(locale, "message.category.name.null");
         }
@@ -281,6 +298,14 @@ public class CategoryBusiness extends BaseFWServiceImpl<CategoryDAO, CategoryDTO
         if (dto.getDescription() != null && dto.getDescription().length() > 65000) {
             return LanguageBundleUtils.getString(locale, "message.category.name.overLength.65000");
         }
+
+        if (StringUtils.isNullOrEmpty(dto.getCategoryStatus())) {
+            return LanguageBundleUtils.getString(locale, "message.category.status.null");
+        }
+        if (!"1".equals(dto.getCategoryStatus()) && !"0".equals(dto.getCategoryStatus())) {
+            return LanguageBundleUtils.getString(locale, "message.category.status.invalid");
+        }
+
         return null;
     }
 

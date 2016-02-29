@@ -25,6 +25,11 @@ public class TagDishDTO extends BaseFWDTO<TagDish>{
     private String tagIdName;
     private String dishId;
     private String dishIdName;
+    
+    public final static String MODEL_NAME = "TagDish";
+    public final static String TAG_ID = "tagId";
+    public final static String DISH_ID = "dishId";
+    
     //Constructor
 	public TagDishDTO() {
 		setDefaultSortField("id");	

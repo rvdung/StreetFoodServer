@@ -223,6 +223,14 @@ public class DishLanguageBusiness extends BaseFWServiceImpl<DishLanguageDAO, Dis
             return LanguageBundleUtils.getString(locale, "message.dishLanguage.name.overLength.255");
         }
 
+        if (dto.getShortDescription() != null && dto.getShortDescription().length() > 255) {
+            return LanguageBundleUtils.getString(locale, "message.dishLanguage.shortDescription.overLength.255");
+        }
+
+        if (dto.getLongDescription() != null && dto.getLongDescription().length() > 65000) {
+            return LanguageBundleUtils.getString(locale, "message.dishLanguage.longDescription.overLength.65000");
+        }
+
         if (StringUtils.isNullOrEmpty(dto.getDishId())) {
             return LanguageBundleUtils.getString(locale, "message.dish.id.null");
         }
@@ -239,6 +247,7 @@ public class DishLanguageBusiness extends BaseFWServiceImpl<DishLanguageDAO, Dis
         } catch (NumberFormatException e) {
             return LanguageBundleUtils.getString(locale, "message.locale.id.invalid");
         }
+
         try {
             Dish dish = dishBusiness.findById(Long.valueOf(dto.getDishId()));
             if (dish == null) {
@@ -255,7 +264,7 @@ public class DishLanguageBusiness extends BaseFWServiceImpl<DishLanguageDAO, Dis
         if (dishId == null) {
             return LanguageBundleUtils.getString(locale, "message.dish.id.null");
         }
-       
+
         return null;
     }
 }

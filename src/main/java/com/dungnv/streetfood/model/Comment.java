@@ -98,7 +98,7 @@ public class Comment extends BaseFWModel {
         this.title = title;
     }
 
-    @Column(name = "dish_id", columnDefinition = "Dish")
+    @Column(name = "dish_id")
     public Long getDishId() {
         return this.dishId;
     }
@@ -107,7 +107,7 @@ public class Comment extends BaseFWModel {
         this.dishId = dishId;
     }
 
-    @Column(name = "restaurant_id", columnDefinition = "Restaurant")
+    @Column(name = "restaurant_id")
     public Long getRestaurantId() {
         return this.restaurantId;
     }
@@ -116,7 +116,7 @@ public class Comment extends BaseFWModel {
         this.restaurantId = restaurantId;
     }
 
-    @Column(name = "user_id", nullable = false, columnDefinition = "User")
+    @Column(name = "user_id", nullable = false)
     public Long getUserId() {
         return this.userId;
     }

@@ -19,6 +19,7 @@ public class ServiceConfig {
     public CategoryService getCategoryService() {
         return new CategoryServiceImpl();
     }
+
     @Bean
     public ClientService getClientService() {
         return new ClientServiceImpl();

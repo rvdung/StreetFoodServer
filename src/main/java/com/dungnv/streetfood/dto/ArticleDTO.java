@@ -30,13 +30,17 @@ public class ArticleDTO extends BaseFWDTO<Article> {
     private String updateTimeGmt;
     private String viewCount;
 
+    private String restaurantId;
+    private String notRestaurantId;
+    private String dishId;
+    private String notDishId;
+    private String isGetOnlyIdentified;
     private List<ArticleLanguageDTO> listLanguage;
     private List<String> listTag;
     private List<String> listImgUrl;
     private String imageId;
     private String imageUrl;
-
-   
+    public final static String ID = "id";
 
     //Constructor
     public ArticleDTO() {
@@ -53,6 +57,46 @@ public class ArticleDTO extends BaseFWDTO<Article> {
         this.viewCount = viewCount;
     }
     //Getters and setters
+
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
+    }
+
+    public String getNotRestaurantId() {
+        return notRestaurantId;
+    }
+
+    public void setNotRestaurantId(String notRestaurantId) {
+        this.notRestaurantId = notRestaurantId;
+    }
+
+    public String getDishId() {
+        return dishId;
+    }
+
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
+    }
+
+    public String getNotDishId() {
+        return notDishId;
+    }
+
+    public void setNotDishId(String notDishId) {
+        this.notDishId = notDishId;
+    }
+
+    public String getIsGetOnlyIdentified() {
+        return isGetOnlyIdentified;
+    }
+
+    public void setIsGetOnlyIdentified(String isGetOnlyIdentified) {
+        this.isGetOnlyIdentified = isGetOnlyIdentified;
+    }
 
     public List<ArticleLanguageDTO> getListLanguage() {
         return listLanguage;

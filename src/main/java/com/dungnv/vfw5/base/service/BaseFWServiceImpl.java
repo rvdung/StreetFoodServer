@@ -24,6 +24,7 @@ import javax.persistence.Column;
 import javax.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 /**
  *
@@ -127,7 +128,7 @@ public class BaseFWServiceImpl<TDAO extends BaseFWDAOImpl, TDTO extends BaseFWDT
 //        return tDAO.delete(tModel.getModelName(), lstCondition, transId);
 //    }
     @Override
-    public String delete(List<TDTO> tFormOnGrid) {
+    public String delete(Collection<TDTO> tFormOnGrid) {
 
         List<ConditionBean> lstCondition = new ArrayList<ConditionBean>();
         for (TDTO tForm : tFormOnGrid) {
@@ -543,6 +544,14 @@ public class BaseFWServiceImpl<TDAO extends BaseFWDAOImpl, TDTO extends BaseFWDT
                     type));
         }
         return gettDAO().find(tModel.getModelName(), lstCondition).isEmpty() ? false : true;
+    }
+    
+    public ResultDTO rollBackTransaction(String error){
+        ResultDTO result = new ResultDTO();
+        TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(error);
+            return result;
     }
 
 }

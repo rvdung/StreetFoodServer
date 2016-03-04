@@ -11,6 +11,7 @@ import com.dungnv.streetfood.dao.DishDAO;
 import com.dungnv.streetfood.dto.CategoryDTO;
 import com.dungnv.streetfood.dto.CategoryDishDTO;
 import com.dungnv.streetfood.dto.CommentDTO;
+import com.dungnv.streetfood.dto.DishArticleDTO;
 import com.dungnv.streetfood.dto.DishLanguageDTO;
 import com.dungnv.streetfood.dto.ImgDTO;
 import com.dungnv.streetfood.dto.RestaurantDishDetailDTO;
@@ -52,8 +53,6 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
 
     @Autowired
     private DishDAO dishDAO;
-    @Autowired
-    private CategoryDishBusinessInterface categoryDishBusiness;
     @Autowired
     private DishLanguageBusinessInterface dishLanguageBusiness;
     @Autowired
@@ -157,7 +156,8 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
             return result;
         }
 //</editor-fold>
-
+        result.setMessage(ParamUtils.SUCCESS);
+        result.setId(dto.getId());
         return result;
     }
 
@@ -227,7 +227,7 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
         Long ids = Long.valueOf(id);
 
         List<ConditionBean> lstCondition = new ArrayList<ConditionBean>();
-        
+
         // Delete language
         lstCondition.add(new ConditionBean(
                 DishLanguageDTO.DISH_ID,
@@ -307,8 +307,8 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
             result.setKey(resultDeleteDishDish);
             return result;
         }
-        
-         // Delete Restaurant DISH
+
+        // Delete Restaurant DISH
         lstCondition.clear();
         lstCondition.add(new ConditionBean(
                 RestaurantDishDetailDTO.DISH_ID,
@@ -321,6 +321,22 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
             TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
             result.setMessage(ParamUtils.FAIL);
             result.setKey(resultDeleteRestaurantRestaurant);
+            return result;
+        }
+
+        // Delete DISH article 
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                DishArticleDTO.DISH_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteDishArticle = gettDAO().delete(DishArticleDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteDishArticle)
+                && !ParamUtils.FAIL.equals(resultDeleteDishArticle)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteDishArticle);
             return result;
         }
 
@@ -352,14 +368,17 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
             sbQuery.append(" select count(c.id) as id from dish c where 1=1 ");
         } else {
             sbQuery.append(" select c.id , c.name");
-            sbQuery.append(" , c.short_description shortDescription");
-            sbQuery.append(" , c.dish_status dishStatus");
-            sbQuery.append(" , c.view_count viewCount");
-            sbQuery.append(" , c.comment_count commentCount ");
-            sbQuery.append(" , c.share_count shareCount");
-            sbQuery.append(" , c.rating ");
-            sbQuery.append(" , g.id imageId");
-            sbQuery.append(" , g.url imageUrl");
+            if (dto == null || !"1".equals(dto.getIsGetOnlyIdentified())) {
+                sbQuery.append(" , c.short_description shortDescription");
+                sbQuery.append(" , c.dish_status dishStatus");
+                sbQuery.append(" , c.view_count viewCount");
+                sbQuery.append(" , c.comment_count commentCount ");
+                sbQuery.append(" , c.share_count shareCount");
+                sbQuery.append(" , c.rating ");
+                sbQuery.append(" , g.id imageId");
+                sbQuery.append(" , g.url imageUrl");
+            }
+
             sbQuery.append(" from dish c left outer join img g on c.id = g.dish_id and g.orders = 1 ");
             sbQuery.append(" where 1=1");
         }
@@ -379,9 +398,38 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
                 listType.add(StringType.INSTANCE);
             }
 
-            if (!StringUtils.isNullOrEmpty(dto.getDishStatus())) {
-                sbQuery.append(" AND c.category_status = ? ");
-                listParam.add(Long.valueOf(dto.getDishStatus()));
+            if (!StringUtils.isNullOrEmpty(dto.getCategoryId())) {
+                sbQuery.append(" AND c.id in ( select dish_id from category_dish where category_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getCategoryId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getNotCategoryId())) {
+                sbQuery.append(" AND c.id not in ( select dish_id from category_dish where category_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getNotCategoryId()));
+                listType.add(LongType.INSTANCE);
+            }
+            
+            if (!StringUtils.isNullOrEmpty(dto.getArticleId())) {
+                sbQuery.append(" AND c.id in ( select dish_id from dish_article where article_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getArticleId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getNotArticleId())) {
+                sbQuery.append(" AND c.id not in ( select dish_id from dish_article where article_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getNotArticleId()));
+                listType.add(LongType.INSTANCE);
+            }
+            if (!StringUtils.isNullOrEmpty(dto.getRestaurantId())) {
+                sbQuery.append(" AND c.id in ( select dish_id from restaurant_dish_detail where restaurant_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getRestaurantId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getNotRestaurantId())) {
+                sbQuery.append(" AND c.id not in ( select dish_id from restaurant_dish_detail where restaurant_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getNotRestaurantId()));
                 listType.add(LongType.INSTANCE);
             }
 
@@ -424,21 +472,22 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
                 listParam.add(maxRow);
                 listType.add(IntegerType.INSTANCE);
             }
-
         }
 
         SQLQuery query = gettDAO().getSession().createSQLQuery(sbQuery.toString());
         query.addScalar("id", StringType.INSTANCE);
         if (!isCount) {
             query.addScalar("name", StringType.INSTANCE);
-            query.addScalar("shortDescription", StringType.INSTANCE);
-            query.addScalar("dishStatus", StringType.INSTANCE);
-            query.addScalar("viewCount", StringType.INSTANCE);
-            query.addScalar("commentCount", StringType.INSTANCE);
-            query.addScalar("shareCount", StringType.INSTANCE);
-            query.addScalar("rating", StringType.INSTANCE);
-            query.addScalar("imageId", StringType.INSTANCE);
-            query.addScalar("imageUrl", StringType.INSTANCE);
+            if (dto == null || !"1".equals(dto.getIsGetOnlyIdentified())) {
+                query.addScalar("shortDescription", StringType.INSTANCE);
+                query.addScalar("dishStatus", StringType.INSTANCE);
+                query.addScalar("viewCount", StringType.INSTANCE);
+                query.addScalar("commentCount", StringType.INSTANCE);
+                query.addScalar("shareCount", StringType.INSTANCE);
+                query.addScalar("rating", StringType.INSTANCE);
+                query.addScalar("imageId", StringType.INSTANCE);
+                query.addScalar("imageUrl", StringType.INSTANCE);
+            }
         }
 
         query.setResultTransformer(Transformers.aliasToBean(DishDTO.class));
@@ -469,10 +518,6 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
                     ParamUtils.TYPE_NUMBER));
             List<DishLanguageDTO> listDishLanguage = dishLanguageBusiness.searchByConditionBean(lstCondition, 0, 0, "ASC", "id");
             result.setListLanguage(listDishLanguage);
-
-            // get list category
-            List<CategoryDTO> listCategory = categoryDishBusiness.getListCategoryByDish(userName, localeCode, countryCode, token, id);
-            result.setListCategory(listCategory);
 
             // get Tag
             List<String> listTag = tagDishBusiness.getTagsListByDish(userName, localeCode, countryCode, token, id);
@@ -539,13 +584,14 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
             return LanguageBundleUtils.getString(locale, "message.dish.shareCount.invalid");
         }
 
-        if (dto.getRating() != null && !StringUtils.isInteger(dto.getRating())) {
-            return LanguageBundleUtils.getString(locale, "message.dish.rating.invalid");
-        }
-
-        Integer rating = Integer.valueOf(dto.getRating());
-        if (rating > 5) {
-            return LanguageBundleUtils.getString(locale, "message.dish.rating.over.5");
+        if (dto.getRating() != null) {
+            if (!StringUtils.isInteger(dto.getRating())) {
+                return LanguageBundleUtils.getString(locale, "message.dish.rating.invalid");
+            }
+            Integer rating = Integer.valueOf(dto.getRating());
+            if (rating > 5) {
+                return LanguageBundleUtils.getString(locale, "message.dish.rating.over.5");
+            }
         }
 
         return null;

@@ -5,6 +5,7 @@
 package com.dungnv.vfw5.base.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -172,12 +173,14 @@ public final class StringUtils {
         }
         return true;
     }
+
     public static boolean isLongtitude(String str) {
         if (str == null || !str.matches("^(\\+|-)?(?:180(?:(?:\\.0{1,10})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\\.[0-9]{1,10})?))$")) {
             return false;
         }
         return true;
     }
+
     public static boolean isLatitude(String str) {
         if (str == null || !str.matches("^(\\+|-)?(?:90(?:(?:\\.0{1,10})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,10})?))$")) {
             return false;
@@ -334,7 +337,7 @@ public final class StringUtils {
                 System.arraycopy(superFields, 0, allField, fields.length, superFields.length);
                 for (Field f : allField) {
                     f.setAccessible(true);
-                    if (f.getType().equals(java.lang.String.class)) {
+                    if (f.getType().equals(java.lang.String.class) && !Modifier.isFinal(f.getModifiers())) {
                         if (f.get(escapeObject) != null) {
                             oldData = f.get(escapeObject).toString();
                             newData = StringEscapeUtils.escapeSql(oldData);
@@ -392,7 +395,7 @@ public final class StringUtils {
                 System.arraycopy(superFields, 0, allField, fields.length, superFields.length);
                 for (Field f : allField) {
                     f.setAccessible(true);
-                    if (f.getType().equals(java.lang.String.class)) {
+                    if (f.getType().equals(java.lang.String.class) && !Modifier.isFinal(f.getModifiers())) {
                         if (f.get(obj) != null) {
                             oldData = f.get(obj).toString();
                             newData = isLower ? oldData.trim().toLowerCase() : oldData.trim();

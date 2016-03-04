@@ -7,9 +7,13 @@ package com.dungnv.streetfood.service;
 
 import com.dungnv.streetfood.business.ArticleBusinessInterface;
 import com.dungnv.streetfood.business.CategoryBusinessInterface;
+import com.dungnv.streetfood.business.CategoryDishBusinessInterface;
+import com.dungnv.streetfood.business.DishArticleBusinessInterface;
 import com.dungnv.streetfood.business.DishBusinessInterface;
 import com.dungnv.streetfood.business.LocaleBusinessInterface;
+import com.dungnv.streetfood.business.RestaurantArticleBusinessInterface;
 import com.dungnv.streetfood.business.RestaurantBusinessInterface;
+import com.dungnv.streetfood.business.RestaurantDishDetailBusinessInterface;
 import com.dungnv.streetfood.business.SlideShowBusinessInterface;
 import com.dungnv.streetfood.business.TagsBusinessInterface;
 import com.dungnv.streetfood.business.UserBusinessInterface;
@@ -40,6 +44,14 @@ public class ClientServiceImpl implements ClientService {
     CategoryBusinessInterface categoryBusiness;
     @Autowired
     DishBusinessInterface dishBusiness;
+    @Autowired
+    DishArticleBusinessInterface dishArticleBusiness;
+    @Autowired
+    RestaurantArticleBusinessInterface restaurantArticleBusiness;
+    @Autowired
+    RestaurantDishDetailBusinessInterface restaurantDishDetailBusiness;
+    @Autowired
+    CategoryDishBusinessInterface categoryDishBusiness;
     @Autowired
     SlideShowBusinessInterface slideShowBusiness;
     @Autowired
@@ -210,6 +222,46 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public SlideShowDTO getSlideShowDetail(String userName, String localeCode, String countryCode, String token, String id) {
         return slideShowBusiness.getSlideShowDetail(userName, localeCode, countryCode, token, id);
+    }
+
+    @Override
+    public ResultDTO insertListDishToCategory(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return categoryDishBusiness.insertListDishToCategory(userName, localeCode, countryCode, token, id, list);
+    }
+
+    @Override
+    public ResultDTO insertListCategoryToDish(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return categoryDishBusiness.insertListCategoryToDish(userName, localeCode, countryCode, token, id, list);
+    }
+
+    @Override
+    public ResultDTO insertListDishToArticle(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return dishArticleBusiness.insertListDishToArticle(userName, localeCode, countryCode, token, id, list);
+    }
+
+    @Override
+    public ResultDTO insertListArticleToDish(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return dishArticleBusiness.insertListArticleToDish(userName, localeCode, countryCode, token, id, list);
+    }
+
+    @Override
+    public ResultDTO insertListDishToRestaurant(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return restaurantDishDetailBusiness.insertListDishToRestaurant(userName, localeCode, countryCode, token, id, list);
+    }
+
+    @Override
+    public ResultDTO insertListRestaurantToDish(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return restaurantDishDetailBusiness.insertListRestaurantToDish(userName, localeCode, countryCode, token, id, list);
+    }
+
+    @Override
+    public ResultDTO insertListRestaurantToArticle(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return restaurantArticleBusiness.insertListRestaurantToArticle(userName, localeCode, countryCode, token, id, list);
+    }
+
+    @Override
+    public ResultDTO insertListArticleToRestaurant(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+        return restaurantArticleBusiness.insertListArticleToRestaurant(userName, localeCode, countryCode, token, id, list);
     }
 
 }

@@ -204,7 +204,7 @@ public class User extends BaseFWModel {
         this.userCreateTimeGmt = userCreateTimeGmt;
     }
 
-    @Column(name = "sys_role_id", nullable = false, columnDefinition = "SysRole")
+    @Column(name = "sys_role_id", nullable = false)
     public Long getSysRoleId() {
         return this.sysRoleId;
     }

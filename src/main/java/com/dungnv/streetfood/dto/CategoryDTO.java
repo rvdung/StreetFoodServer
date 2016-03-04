@@ -31,7 +31,13 @@ public class CategoryDTO extends BaseFWDTO<Category> {
     private String categoryUpdateTimeGmt;
     private String categoryCreateTimeGmt;
 
+    public final static String ID = "id";
+    public final static String MODEL_NAME = "id";
+
     //extend
+    private String dishId;
+    private String notDishId;
+    private String isGetOnlyIdentified;
     private List<DishGroupLangageDTO> listLanguage;
     private List<String> listTag;
     private List<String> listImgUrl;
@@ -54,6 +60,30 @@ public class CategoryDTO extends BaseFWDTO<Category> {
         this.categoryCreateTimeGmt = categoryCreateTimeGmt;
     }
     //Getters and setters
+
+    public String getDishId() {
+        return dishId;
+    }
+
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
+    }
+
+    public String getNotDishId() {
+        return notDishId;
+    }
+
+    public void setNotDishId(String notDishId) {
+        this.notDishId = notDishId;
+    }
+
+    public String getIsGetOnlyIdentified() {
+        return isGetOnlyIdentified;
+    }
+
+    public void setIsGetOnlyIdentified(String isGetOnlyIdentified) {
+        this.isGetOnlyIdentified = isGetOnlyIdentified;
+    }
 
     public List<String> getListImgUrl() {
         return listImgUrl;

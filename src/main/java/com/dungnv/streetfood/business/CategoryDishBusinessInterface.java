@@ -8,6 +8,7 @@ import com.dungnv.streetfood.dto.CategoryDTO;
 import com.dungnv.streetfood.dto.CategoryDishDTO;
 import com.dungnv.streetfood.dto.DishDTO;
 import com.dungnv.streetfood.model.CategoryDish;
+import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.service.BaseFWServiceInterface;
 import java.util.List;
 
@@ -19,7 +20,15 @@ import java.util.List;
  */
 public interface CategoryDishBusinessInterface extends BaseFWServiceInterface<CategoryDishDTO, CategoryDish> {
 
-    public List<CategoryDTO> getListCategoryByDish(String userName, String localeCode, String countryCode, String token, String id);
+    public List<CategoryDTO> getListCategoryByDish(String userName, String localeCode
+            , String countryCode, String token, String id, boolean isIn);
 
-    public List<DishDTO> getListDishByCategory(String userName, String localeCode, String countryCode, String token, String id);
+    public List<DishDTO> getListDishByCategory(String userName, String localeCode
+            , String countryCode, String token, String id, boolean isIn);
+
+    public ResultDTO insertListDishToCategory(String userName, String localeCode
+            , String countryCode, String token, String id, List<String> list);
+
+    public ResultDTO insertListCategoryToDish(String userName, String localeCode
+            , String countryCode, String token, String id, List<String> list);
 }

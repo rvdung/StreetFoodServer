@@ -8,6 +8,7 @@ import com.dungnv.vfw5.base.model.BaseFWModel;
 import com.dungnv.vfw5.base.dto.BaseFWDTO;
 import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.pojo.ConditionBean;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import org.hibernate.Session;
@@ -53,7 +54,7 @@ public interface BaseFWServiceInterface<TDTO extends BaseFWDTO, TModel extends B
 
     public String delete(Long id);
 
-    public String delete(List<TDTO> tDTOOnGrid);
+    public String delete(Collection<TDTO> tDTOOnGrid);
 
     public TModel findById(Long id);
 

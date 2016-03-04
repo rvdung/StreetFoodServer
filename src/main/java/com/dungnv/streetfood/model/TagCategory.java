@@ -56,7 +56,7 @@ public class TagCategory extends BaseFWModel {
         this.id = id;
     }
 
-    @Column(name = "tag_id", nullable = false, columnDefinition = "Tags")
+    @Column(name = "tag_id", nullable = false)
     public Long getTagId() {
         return this.tagId;
     }
@@ -65,7 +65,7 @@ public class TagCategory extends BaseFWModel {
         this.tagId = tagId;
     }
 
-    @Column(name = "category_id", nullable = false, columnDefinition = "Category")
+    @Column(name = "category_id", nullable = false)
     public Long getCategoryId() {
         return this.categoryId;
     }

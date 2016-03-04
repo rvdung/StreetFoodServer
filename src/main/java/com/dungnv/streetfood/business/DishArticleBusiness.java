@@ -4,23 +4,26 @@
  */
 package com.dungnv.streetfood.business;
 
-import com.dungnv.vfw5.base.service.BaseFWServiceImpl;
-import com.dungnv.streetfood.dto.RestaurantArticleDTO;
-import com.dungnv.streetfood.model.RestaurantArticle;
-import com.dungnv.streetfood.dao.RestaurantArticleDAO;
+import com.dungnv.streetfood.model.DishArticle;
+import com.dungnv.streetfood.dao.DishArticleDAO;
 import com.dungnv.streetfood.dto.ArticleDTO;
-import com.dungnv.streetfood.dto.RestaurantArticleDTO;
-import com.dungnv.streetfood.dto.RestaurantDTO;
+import com.dungnv.streetfood.dto.DishArticleDTO;
+import com.dungnv.streetfood.dto.DishDTO;
 import com.dungnv.streetfood.model.Article;
-import com.dungnv.streetfood.model.Restaurant;
+import com.dungnv.streetfood.model.Dish;
 import com.dungnv.vfw5.base.dto.ResultDTO;
 import com.dungnv.vfw5.base.pojo.ConditionBean;
+import com.dungnv.vfw5.base.service.BaseFWServiceImpl;
 import com.dungnv.vfw5.base.utils.DataUtil;
 import com.dungnv.vfw5.base.utils.LanguageBundleUtils;
 import com.dungnv.vfw5.base.utils.ParamUtils;
 import com.dungnv.vfw5.base.utils.StringUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.hibernate.Session;
-import java.util.*;
 import javax.transaction.Transactional;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
@@ -33,44 +36,44 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
  *
  * @author dungnv
  * @version 1.0
- * @since 2/21/2016 12:49 PM
+ * @since 2/29/2016 10:24 PM
  */
-@Service("restaurantArticleBusiness")
+@Service("dishArticleBusiness")
 @Transactional
-public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArticleDAO, RestaurantArticleDTO, RestaurantArticle> implements RestaurantArticleBusinessInterface {
+public class DishArticleBusiness extends BaseFWServiceImpl<DishArticleDAO, DishArticleDTO, DishArticle> implements DishArticleBusinessInterface {
 
     @Autowired
-    private RestaurantArticleDAO restaurantArticleDAO;
+    private DishArticleDAO dishArticleDAO;
     @Autowired
     private ArticleBusinessInterface articleBusiness;
     @Autowired
-    private RestaurantBusinessInterface restaurantBusiness;
+    private DishBusinessInterface dishBusiness;
 
     enum TYPE {
         DISHES_TO_ARTICLE, ARTICLES_TO_DISH
     }
 
-    public RestaurantArticleBusiness() {
-        tModel = new RestaurantArticle();
-        tDAO = restaurantArticleDAO;
+    public DishArticleBusiness() {
+        tModel = new DishArticle();
+        tDAO = dishArticleDAO;
     }
 
     @Override
-    public RestaurantArticleDAO gettDAO() {
-        return restaurantArticleDAO;
+    public DishArticleDAO gettDAO() {
+        return dishArticleDAO;
     }
 
-    public RestaurantArticleBusiness(Session session) {
+    public DishArticleBusiness(Session session) {
         this.session = session;
-        tModel = new RestaurantArticle();
-        tDAO = restaurantArticleDAO;
+        tModel = new DishArticle();
+        tDAO = dishArticleDAO;
     }
 
     @Override
-    public List<ArticleDTO> getListArticleByRestaurant(String userName, String localeCode, String countryCode, String token, String id) {
+    public List<ArticleDTO> getListArticleByDish(String userName, String localeCode, String countryCode, String token, String id) {
         SQLQuery query = gettDAO().getSession().createSQLQuery("select c.id, c.name from article c "
-                + " inner join restaurant_article l on c.id = l.article_id"
-                + " where l.restaurant_id = ? ");
+                + " inner join dish_article l on c.id = l.article_id"
+                + " where l.dish_id = ? ");
         query.addScalar("id", StringType.INSTANCE);
         query.addScalar("name", StringType.INSTANCE);
         query.setLong(0, Long.valueOf(id));
@@ -79,19 +82,19 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
     }
 
     @Override
-    public List<RestaurantDTO> getListRestaurantByArticle(String userName, String localeCode, String countryCode, String token, String id) {
-        SQLQuery query = gettDAO().getSession().createSQLQuery("select c.id, c.name from restaurant c "
-                + " inner join restaurant_article l on c.id =l.restaurant_id"
+    public List<DishDTO> getListDishByArticle(String userName, String localeCode, String countryCode, String token, String id) {
+        SQLQuery query = gettDAO().getSession().createSQLQuery("select c.id, c.name from dish c "
+                + " inner join dish_article l on c.id =l.dish_id"
                 + " where l.article_id = ? ");
         query.addScalar("id", StringType.INSTANCE);
         query.addScalar("name", StringType.INSTANCE);
         query.setLong(0, Long.valueOf(id));
-        query.setResultTransformer(Transformers.aliasToBean(RestaurantDTO.class));
+        query.setResultTransformer(Transformers.aliasToBean(DishDTO.class));
         return query.list();
     }
 
     @Override
-    public ResultDTO insertListRestaurantToArticle(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+    public ResultDTO insertListDishToArticle(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
         ResultDTO result = new ResultDTO();
         locale = DataUtil.getLocale(localeCode, countryCode);
 
@@ -99,28 +102,28 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
             list = DataUtil.removeDuplicateString(list, Boolean.TRUE);
         }
 
-        String validate = validate(locale, id, list, RestaurantArticleBusiness.TYPE.DISHES_TO_ARTICLE);
+        String validate = validate(locale, id, list, DishArticleBusiness.TYPE.DISHES_TO_ARTICLE);
         if (!StringUtils.isNullOrEmpty(validate)) {
             return rollBackTransaction(validate);
         }
 
-        Map<String, RestaurantArticleDTO> mapcurrentRestaurant = new HashMap<String, RestaurantArticleDTO>();
+        Map<String, DishArticleDTO> mapcurrentDish = new HashMap<String, DishArticleDTO>();
 
-        RestaurantArticleDTO searchDTO = new RestaurantArticleDTO();
+        DishArticleDTO searchDTO = new DishArticleDTO();
         searchDTO.setArticleId(id);
-        List<RestaurantArticleDTO> ListcurrentRestaurant = search(searchDTO, 0, 0, "ASC", "id");
+        List<DishArticleDTO> ListcurrentDish = search(searchDTO, 0, 0, "ASC", "id");
 
-        for (RestaurantArticleDTO restaurant : ListcurrentRestaurant) {
-            mapcurrentRestaurant.put(restaurant.getRestaurantId(), restaurant);
+        for (DishArticleDTO dish : ListcurrentDish) {
+            mapcurrentDish.put(dish.getDishId(), dish);
         }
 
         if (list != null) {
-            for (String restaurantId : list) {
-                if (mapcurrentRestaurant.containsKey(restaurantId)) {
-                    mapcurrentRestaurant.remove(restaurantId);
+            for (String dishId : list) {
+                if (mapcurrentDish.containsKey(dishId)) {
+                    mapcurrentDish.remove(dishId);
                 } else {
-                    RestaurantArticleDTO dto = new RestaurantArticleDTO();
-                    dto.setRestaurantId(restaurantId);
+                    DishArticleDTO dto = new DishArticleDTO();
+                    dto.setDishId(dishId);
                     dto.setArticleId(id);
                     result = createObject(dto);
                     if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
@@ -131,8 +134,8 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
             }
         }
 
-        if (!mapcurrentRestaurant.isEmpty()) {
-            String resultDelete = delete(mapcurrentRestaurant.values());
+        if (!mapcurrentDish.isEmpty()) {
+            String resultDelete = delete(mapcurrentDish.values());
             if (!ParamUtils.SUCCESS.equals(resultDelete)
                     && !ParamUtils.FAIL.equals(resultDelete)) {
                 TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
@@ -147,7 +150,7 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
     }
 
     @Override
-    public ResultDTO insertListArticleToRestaurant(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
+    public ResultDTO insertListArticleToDish(String userName, String localeCode, String countryCode, String token, String id, List<String> list) {
         ResultDTO result = new ResultDTO();
         locale = DataUtil.getLocale(localeCode, countryCode);
 
@@ -155,18 +158,18 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
             list = DataUtil.removeDuplicateString(list, Boolean.TRUE);
         }
 
-        String validate = validate(locale, id, list, RestaurantArticleBusiness.TYPE.ARTICLES_TO_DISH);
+        String validate = validate(locale, id, list, DishArticleBusiness.TYPE.ARTICLES_TO_DISH);
         if (!StringUtils.isNullOrEmpty(validate)) {
             return rollBackTransaction(validate);
         }
 
-        Map<String, RestaurantArticleDTO> mapcurrentArticle = new HashMap<>();
+        Map<String, DishArticleDTO> mapcurrentArticle = new HashMap<>();
 
-        RestaurantArticleDTO searchDTO = new RestaurantArticleDTO();
-        searchDTO.setRestaurantId(id);
-        List<RestaurantArticleDTO> ListcurrentArticle = search(searchDTO, 0, 0, "ASC", "id");
+        DishArticleDTO searchDTO = new DishArticleDTO();
+        searchDTO.setDishId(id);
+        List<DishArticleDTO> ListcurrentArticle = search(searchDTO, 0, 0, "ASC", "id");
 
-        for (RestaurantArticleDTO article : ListcurrentArticle) {
+        for (DishArticleDTO article : ListcurrentArticle) {
             mapcurrentArticle.put(article.getArticleId(), article);
         }
 
@@ -175,8 +178,8 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
                 if (mapcurrentArticle.containsKey(articleId)) {
                     mapcurrentArticle.remove(articleId);
                 } else {
-                    RestaurantArticleDTO dto = new RestaurantArticleDTO();
-                    dto.setRestaurantId(id);
+                    DishArticleDTO dto = new DishArticleDTO();
+                    dto.setDishId(id);
                     dto.setArticleId(articleId);
                     result = createObject(dto);
                     if (!ParamUtils.SUCCESS.equals(result.getMessage())) {
@@ -202,16 +205,16 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
         return result;
     }
 
-    private String validate(Locale locale, String id, List<String> ids, RestaurantArticleBusiness.TYPE type) {
-        if (type.equals(RestaurantArticleBusiness.TYPE.ARTICLES_TO_DISH)) {
+    private String validate(Locale locale, String id, List<String> ids, DishArticleBusiness.TYPE type) {
+        if (type.equals(DishArticleBusiness.TYPE.ARTICLES_TO_DISH)) {
             if (StringUtils.isNullOrEmpty(id)) {
-                return LanguageBundleUtils.getString(locale, "message.restaurant.id.null");
+                return LanguageBundleUtils.getString(locale, "message.dish.id.null");
             }
 
-            Restaurant model = restaurantBusiness.findById(Long.valueOf(id));
+            Dish model = dishBusiness.findById(Long.valueOf(id));
 
             if (model == null) {
-                return LanguageBundleUtils.getString(locale, "message.restaurant.id.notExist");
+                return LanguageBundleUtils.getString(locale, "message.dish.id.notExist");
             }
 
             if (ids != null && !ids.isEmpty()) {
@@ -236,11 +239,11 @@ public class RestaurantArticleBusiness extends BaseFWServiceImpl<RestaurantArtic
 
             if (ids != null && !ids.isEmpty()) {
                 List<ConditionBean> lstConditionBean = new ArrayList<>();
-                lstConditionBean.add(new ConditionBean(RestaurantDTO.ID, ParamUtils.OP_IN, DataUtil.formatInputList(ids), ParamUtils.TYPE_NUMBER));
-                List<RestaurantDTO> listDTO = restaurantBusiness.searchByConditionBean(lstConditionBean, 0, 0, "ASC", "id");
+                lstConditionBean.add(new ConditionBean(DishDTO.ID, ParamUtils.OP_IN, DataUtil.formatInputList(ids), ParamUtils.TYPE_NUMBER));
+                List<DishDTO> listDTO = dishBusiness.searchByConditionBean(lstConditionBean, 0, 0, "ASC", "id");
 
                 if (listDTO == null || listDTO.size() != ids.size()) {
-                    return LanguageBundleUtils.getString(locale, "message.restaurant.id.notExist");
+                    return LanguageBundleUtils.getString(locale, "message.dish.id.notExist");
                 }
             }
         }

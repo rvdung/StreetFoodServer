@@ -55,7 +55,7 @@ public class RestaurantArticle extends BaseFWModel {
         this.id = id;
     }
 
-    @Column(name = "article_id", nullable = false, columnDefinition = "Article")
+    @Column(name = "article_id", nullable = false)
     public Long getArticleId() {
         return this.articleId;
     }
@@ -64,7 +64,7 @@ public class RestaurantArticle extends BaseFWModel {
         this.articleId = articleId;
     }
 
-    @Column(name = "restaurant_id", nullable = false, columnDefinition = "Restaurant")
+    @Column(name = "restaurant_id", nullable = false)
     public Long getRestaurantId() {
         return this.restaurantId;
     }

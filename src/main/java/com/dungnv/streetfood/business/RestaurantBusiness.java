@@ -302,8 +302,8 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
             result.setKey(resultDeleteRestaurantDish);
             return result;
         }
-        
-         // Delete Restaurant Article
+
+        // Delete Restaurant Article
         lstCondition.clear();
         lstCondition.add(new ConditionBean(
                 RestaurantArticleDTO.RESTAURANT_ID,
@@ -349,14 +349,17 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
             sbQuery.append(" select ");
             sbQuery.append(" r.id");
             sbQuery.append(" , r.name");
-            sbQuery.append(" , r.address");
-            sbQuery.append(" , r.restaurant_status restaurantStatus");
-            sbQuery.append(" , r.view_count viewCount");
-            sbQuery.append(" , r.comment_count commentCount");
-            sbQuery.append(" , r.share_count shareCount");
-            sbQuery.append(" , r.rating");
-            sbQuery.append(" , g.id imageId");
-            sbQuery.append(" , g.url imageUrl");
+            if (dto == null || !"1".equals(dto.getIsGetOnlyIdentified())) {
+                sbQuery.append(" , r.address");
+                sbQuery.append(" , r.restaurant_status restaurantStatus");
+                sbQuery.append(" , r.view_count viewCount");
+                sbQuery.append(" , r.comment_count commentCount");
+                sbQuery.append(" , r.share_count shareCount");
+                sbQuery.append(" , r.rating");
+                sbQuery.append(" , g.id imageId");
+                sbQuery.append(" , g.url imageUrl");
+            }
+
             sbQuery.append(" from restaurant r left outer join img g on r.id = g.restaurant_id and g.orders = 1");
             sbQuery.append(" where 1 = 1");
         }
@@ -367,6 +370,29 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
             if (!StringUtils.isNullOrEmpty(dto.getId())) {
                 sbQuery.append(" AND  r.id = ?");
                 listParam.add(Long.valueOf(dto.getId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getArticleId())) {
+                sbQuery.append(" AND r.id in ( select restaurant_id from restaurant_article where article_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getArticleId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getNotArticleId())) {
+                sbQuery.append(" AND r.id not in ( select restaurant_id from restaurant_article where article_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getNotArticleId()));
+                listType.add(LongType.INSTANCE);
+            }
+            if (!StringUtils.isNullOrEmpty(dto.getDishId())) {
+                sbQuery.append(" AND r.id in ( select restaurant_id from restaurant_dish_detail where dish_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getDishId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getNotDishId())) {
+                sbQuery.append(" AND r.id not in ( select restaurant_id from restaurant_dish_detail where dish_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getNotDishId()));
                 listType.add(LongType.INSTANCE);
             }
 
@@ -422,14 +448,17 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
         query.addScalar("id", StringType.INSTANCE);
         if (!isCount) {
             query.addScalar("name", StringType.INSTANCE);
-            query.addScalar("address", StringType.INSTANCE);
-            query.addScalar("restaurantStatus", StringType.INSTANCE);
-            query.addScalar("viewCount", StringType.INSTANCE);
-            query.addScalar("commentCount", StringType.INSTANCE);
-            query.addScalar("shareCount", StringType.INSTANCE);
-            query.addScalar("rating", StringType.INSTANCE);
-            query.addScalar("imageId", StringType.INSTANCE);
-            query.addScalar("imageUrl", StringType.INSTANCE);
+            if (dto == null || !"1".equals(dto.getIsGetOnlyIdentified())) {
+                query.addScalar("address", StringType.INSTANCE);
+                query.addScalar("restaurantStatus", StringType.INSTANCE);
+                query.addScalar("viewCount", StringType.INSTANCE);
+                query.addScalar("commentCount", StringType.INSTANCE);
+                query.addScalar("shareCount", StringType.INSTANCE);
+                query.addScalar("rating", StringType.INSTANCE);
+                query.addScalar("imageId", StringType.INSTANCE);
+                query.addScalar("imageUrl", StringType.INSTANCE);
+            }
+
         }
 
         query.setResultTransformer(Transformers.aliasToBean(RestaurantDTO.class));
@@ -518,7 +547,7 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
             return LanguageBundleUtils.getString(locale, "message.restaurant.shareCount.invalid");
         }
 
-        if (dto.getRating() != null && !StringUtils.isInteger(dto.getRating())) {
+        if (dto.getRating() != null && !NumberUtils.isDouble(dto.getRating())) {
             return LanguageBundleUtils.getString(locale, "message.restaurant.rating.invalid");
         }
 

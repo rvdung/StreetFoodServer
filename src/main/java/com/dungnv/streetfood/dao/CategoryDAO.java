@@ -47,13 +47,16 @@ public class CategoryDAO extends BaseFWDAOImpl<Category, Long> {
         } else {
             sbQuery.append(" select c.id ");
             sbQuery.append(" , c.name");
-            sbQuery.append(" , c.description");
-            sbQuery.append(" , c.category_status categoryStatus");
-            sbQuery.append(" , g.id imageId");
-            sbQuery.append(" , g.url imageUrl");
+            if (categoryDTO == null || !"1".equals(categoryDTO.getIsGetOnlyIdentified())) {
+                sbQuery.append(" , c.description");
+                sbQuery.append(" , c.category_status categoryStatus");
+                sbQuery.append(" , g.id imageId");
+                sbQuery.append(" , g.url imageUrl");
+            }
+
             sbQuery.append(" from Category c ");
-            sbQuery.append(" left outer join img g on c.id = g.dish_group_id and g.orders = 1  " );
-            sbQuery.append(" where 1=1"); 
+            sbQuery.append(" left outer join img g on c.id = g.dish_group_id and g.orders = 1  ");
+            sbQuery.append(" where 1=1");
         }
 
         if (categoryDTO != null) {
@@ -64,29 +67,41 @@ public class CategoryDAO extends BaseFWDAOImpl<Category, Long> {
                 listParam.add(Long.valueOf(categoryDTO.getId()));
                 listType.add(LongType.INSTANCE);
             }
+            
+            if (!StringUtils.isNullOrEmpty(categoryDTO.getDishId())) {
+                sbQuery.append(" AND c.id in ( select category_id from category_dish where dish_id = ? ) ");
+                listParam.add(Long.valueOf(categoryDTO.getDishId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(categoryDTO.getNotDishId())) {
+                sbQuery.append(" AND c.id not in ( select category_id from category_dish where dish_id = ? ) ");
+                listParam.add(Long.valueOf(categoryDTO.getNotDishId()));
+                listType.add(LongType.INSTANCE);
+            }
 
             if (!StringUtils.isNullOrEmpty(categoryDTO.getName())) {
                 sbQuery.append(" AND lower(c.name) like ? ");
                 listParam.add("%" + categoryDTO.getName().toLowerCase() + "%");
                 listType.add(StringType.INSTANCE);
             }
-            
+
             if (!StringUtils.isNullOrEmpty(categoryDTO.getCategoryStatus())) {
                 sbQuery.append(" AND c.category_status = ? ");
                 listParam.add(Long.valueOf(categoryDTO.getCategoryStatus()));
                 listType.add(LongType.INSTANCE);
             }
-            
+
             if (!StringUtils.isNullOrEmpty(categoryDTO.getDescription())) {
                 sbQuery.append(" AND lower(c.description) like ? ");
                 listParam.add("%" + categoryDTO.getDescription().toLowerCase() + "%");
                 listType.add(StringType.INSTANCE);
             }
-            
+
             if (categoryDTO.getListTag() != null && !categoryDTO.getListTag().isEmpty()) {
                 sbQuery.append(" AND  c.id in (select category_id from tag_category where tag_id in ");
                 sbQuery.append(QueryUtil.getParameterHolderString(categoryDTO.getListTag().size()));
-                 sbQuery.append(" )");
+                sbQuery.append(" )");
                 List<String> listTag = categoryDTO.getListTag();
                 for (String tagId : listTag) {
                     listParam.add(Long.valueOf(tagId));
@@ -111,10 +126,12 @@ public class CategoryDAO extends BaseFWDAOImpl<Category, Long> {
         query.addScalar("id", StringType.INSTANCE);
         if (!isCount) {
             query.addScalar("name", StringType.INSTANCE);
-            query.addScalar("description", StringType.INSTANCE);
-            query.addScalar("categoryStatus", StringType.INSTANCE);
-            query.addScalar("imageId", StringType.INSTANCE);
-            query.addScalar("imageUrl", StringType.INSTANCE);
+            if (categoryDTO == null || !"1".equals(categoryDTO.getIsGetOnlyIdentified())) {
+                query.addScalar("description", StringType.INSTANCE);
+                query.addScalar("categoryStatus", StringType.INSTANCE);
+                query.addScalar("imageId", StringType.INSTANCE);
+                query.addScalar("imageUrl", StringType.INSTANCE);
+            }
         }
 
         query.setResultTransformer(Transformers.aliasToBean(CategoryDTO.class));

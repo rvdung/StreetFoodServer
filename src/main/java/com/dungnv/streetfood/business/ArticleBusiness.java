@@ -9,6 +9,7 @@ import com.dungnv.streetfood.dao.ArticleDAO;
 import com.dungnv.streetfood.dto.ImgDTO;
 import com.dungnv.streetfood.dto.ArticleDTO;
 import com.dungnv.streetfood.dto.ArticleLanguageDTO;
+import com.dungnv.streetfood.dto.DishArticleDTO;
 import com.dungnv.streetfood.dto.RestaurantArticleDTO;
 import com.dungnv.streetfood.dto.TagArticleDTO;
 import com.dungnv.streetfood.model.Article;
@@ -272,6 +273,22 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
             return result;
         }
 
+        // Delete DISH article 
+        lstCondition.clear();
+        lstCondition.add(new ConditionBean(
+                DishArticleDTO.ARTICLE_ID,
+                ParamUtils.OP_EQUAL,
+                String.valueOf(id),
+                ParamUtils.TYPE_NUMBER));
+        String resultDeleteDishArticle = gettDAO().delete(DishArticleDTO.MODEL_NAME, lstCondition);
+        if (!ParamUtils.SUCCESS.equals(resultDeleteDishArticle)
+                && !ParamUtils.FAIL.equals(resultDeleteDishArticle)) {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+            result.setMessage(ParamUtils.FAIL);
+            result.setKey(resultDeleteDishArticle);
+            return result;
+        }
+
         // delete model
         String resultDelete = delete(ids);
         if (!ParamUtils.SUCCESS.equals(resultDelete)
@@ -301,10 +318,13 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
         } else {
             sbQuery.append(" select a.id");
             sbQuery.append(" , a.title");
-            sbQuery.append(" , a.short_content shortContent");
-            sbQuery.append(" , a.view_count viewCount");
-            sbQuery.append(" , g.id imageId");
-            sbQuery.append(" , g.url imageUrl");
+            if (dto == null || !"1".equals(dto.getIsGetOnlyIdentified())) {
+                sbQuery.append(" , a.short_content shortContent");
+                sbQuery.append(" , a.view_count viewCount");
+                sbQuery.append(" , g.id imageId");
+                sbQuery.append(" , g.url imageUrl");
+            }
+
             sbQuery.append("  from article a left outer join img g on a.id = g.article_id and g.orders = 1");
             sbQuery.append(" where 1 = 1");
         }
@@ -315,6 +335,30 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
             if (!StringUtils.isNullOrEmpty(dto.getId())) {
                 sbQuery.append(" AND  a.id = ?");
                 listParam.add(Long.valueOf(dto.getId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getRestaurantId())) {
+                sbQuery.append(" AND a.id in ( select article_id from restaurant_article where restaurant_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getRestaurantId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getNotRestaurantId())) {
+                sbQuery.append(" AND a.id not in ( select article_id from restaurant_article where restaurant_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getNotRestaurantId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getDishId())) {
+                sbQuery.append(" AND a.id in ( select article_id from dish_article where dish_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getDishId()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getNotDishId())) {
+                sbQuery.append(" AND a.id not in ( select article_id from dish_article where dish_id = ? ) ");
+                listParam.add(Long.valueOf(dto.getNotDishId()));
                 listType.add(LongType.INSTANCE);
             }
 
@@ -363,10 +407,12 @@ public class ArticleBusiness extends BaseFWServiceImpl<ArticleDAO, ArticleDTO, A
         query.addScalar("id", StringType.INSTANCE);
         if (!isCount) {
             query.addScalar("title", StringType.INSTANCE);
-            query.addScalar("shortContent", StringType.INSTANCE);
-            query.addScalar("viewCount", StringType.INSTANCE);
-            query.addScalar("imageId", StringType.INSTANCE);
-            query.addScalar("imageUrl", StringType.INSTANCE);
+            if (dto == null || !"1".equals(dto.getIsGetOnlyIdentified())) {
+                query.addScalar("shortContent", StringType.INSTANCE);
+                query.addScalar("viewCount", StringType.INSTANCE);
+                query.addScalar("imageId", StringType.INSTANCE);
+                query.addScalar("imageUrl", StringType.INSTANCE);
+            }
         }
 
         query.setResultTransformer(Transformers.aliasToBean(ArticleDTO.class));

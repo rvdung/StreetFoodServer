@@ -52,6 +52,13 @@ public class RestaurantDTO extends BaseFWDTO<Restaurant> {
     private String shareCount;
     private String rating;
 
+    public final static String ID = "id";
+
+    private String dishId;
+    private String notDishId;
+    private String articleId;
+    private String notArticleId;
+    private String isGetOnlyIdentified;
     private List<RestaurantLanguageDTO> listLanguage;
     private List<String> listTag;
     private List<String> listImgUrl;
@@ -94,6 +101,46 @@ public class RestaurantDTO extends BaseFWDTO<Restaurant> {
         this.rating = rating;
     }
     //Getters and setters
+
+    public String getDishId() {
+        return dishId;
+    }
+
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
+    }
+
+    public String getNotDishId() {
+        return notDishId;
+    }
+
+    public void setNotDishId(String notDishId) {
+        this.notDishId = notDishId;
+    }
+
+    public String getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(String articleId) {
+        this.articleId = articleId;
+    }
+
+    public String getNotArticleId() {
+        return notArticleId;
+    }
+
+    public void setNotArticleId(String notArticleId) {
+        this.notArticleId = notArticleId;
+    }
+
+    public String getIsGetOnlyIdentified() {
+        return isGetOnlyIdentified;
+    }
+
+    public void setIsGetOnlyIdentified(String isGetOnlyIdentified) {
+        this.isGetOnlyIdentified = isGetOnlyIdentified;
+    }
 
     public List<RestaurantLanguageDTO> getListLanguage() {
         return listLanguage;
@@ -363,7 +410,7 @@ public class RestaurantDTO extends BaseFWDTO<Restaurant> {
     public Restaurant toModel() {
         try {
             Restaurant model = new Restaurant(
-                    !StringUtils.validString(id) ? null 
+                    !StringUtils.validString(id) ? null
                     : Long.valueOf(id),
                     name,
                     !StringUtils.validString(lon) ? null

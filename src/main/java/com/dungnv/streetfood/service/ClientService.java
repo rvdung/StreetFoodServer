@@ -249,6 +249,74 @@ public interface ClientService {
             , @WebParam(name = "token") String token//
             , @WebParam(name = "id") String id);
 
+    // CategoryDish
+    @WebMethod(operationName = "insertListDishToCategory")
+    public ResultDTO insertListDishToCategory(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+
+    @WebMethod(operationName = "insertListCategoryToDish")
+    public ResultDTO insertListCategoryToDish(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+
+    // DishArticle
+    @WebMethod(operationName = "insertListDishToArticle")
+    public ResultDTO insertListDishToArticle(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+
+    @WebMethod(operationName = "insertListArticleToDish")
+    public ResultDTO insertListArticleToDish(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+    
+    // RestaurantDishDetail
+    @WebMethod(operationName = "insertListDishToRestaurant")
+    public ResultDTO insertListDishToRestaurant(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+
+    @WebMethod(operationName = "insertListRestaurantToDish")
+    public ResultDTO insertListRestaurantToDish(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+    
+    // RestaurantArticle
+    @WebMethod(operationName = "insertListRestaurantToArticle")
+    public ResultDTO insertListRestaurantToArticle(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+
+    @WebMethod(operationName = "insertListArticleToRestaurant")
+    public ResultDTO insertListArticleToRestaurant(@WebParam(name = "userName") String userName//
+            , @WebParam(name = "localeCode") String localeCode//
+            , @WebParam(name = "countryCode") String countryCode//
+            , @WebParam(name = "token") String token//
+            , @WebParam(name = "id") String id//
+            , @WebParam(name = "list") List<String> list);
+    
     //User
     @WebMethod(operationName = "login")
     public ResultDTO login(@WebParam(name = "userName") String userName//

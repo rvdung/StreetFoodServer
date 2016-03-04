@@ -67,7 +67,7 @@ public class CategoryDAO extends BaseFWDAOImpl<Category, Long> {
                 listParam.add(Long.valueOf(categoryDTO.getId()));
                 listType.add(LongType.INSTANCE);
             }
-            
+
             if (!StringUtils.isNullOrEmpty(categoryDTO.getDishId())) {
                 sbQuery.append(" AND c.id in ( select category_id from category_dish where dish_id = ? ) ");
                 listParam.add(Long.valueOf(categoryDTO.getDishId()));
@@ -106,6 +106,26 @@ public class CategoryDAO extends BaseFWDAOImpl<Category, Long> {
                 for (String tagId : listTag) {
                     listParam.add(Long.valueOf(tagId));
                     listType.add(LongType.INSTANCE);
+                }
+            }
+
+            if (categoryDTO.getListNotLocale() != null && !categoryDTO.getListNotLocale().isEmpty()) {
+                sbQuery.append(" AND not exists (select l.dish_group_id from dish_group_langage l where l.language_code in ");
+                sbQuery.append(QueryUtil.getParameterHolderString(categoryDTO.getListNotLocale().size()));
+                sbQuery.append(" AND l.dish_group_id = c.id )");
+                List<String> listNotLocale = categoryDTO.getListNotLocale();
+                for (String notLocale : listNotLocale) {
+                    listParam.add(notLocale);
+                    listType.add(StringType.INSTANCE);
+                }
+            }
+            if (categoryDTO.getListLocale() != null && !categoryDTO.getListLocale().isEmpty()) {
+
+                for (String locale : categoryDTO.getListLocale()) {
+                    sbQuery.append(" AND exists (select l.dish_group_id from dish_group_langage l where l.language_code = ? ");
+                    sbQuery.append(" AND l.dish_group_id = c.id )");
+                    listParam.add(locale);
+                    listType.add(StringType.INSTANCE);
                 }
             }
         }

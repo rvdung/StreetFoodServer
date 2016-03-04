@@ -39,7 +39,7 @@ public class Dish extends BaseFWModel {
     private Long viewCount;
     private Long commentCount;
     private Long shareCount;
-    private Long rating;
+    private Double rating;
 
     //Constructors
     public Dish() {
@@ -52,7 +52,10 @@ public class Dish extends BaseFWModel {
         this.id = id;
     }
 
-    public Dish(Long id, String name, String shortDescription, String longDescription, Long dishStatus, Date dishUpdateTime, Date dishCreateTime, Date dishUpdateTimeGmt, Date dishCreateTimeGmt, Long viewCount, Long commentCount, Long shareCount, Long rating) {
+    public Dish(Long id, String name, String shortDescription, String longDescription
+            , Long dishStatus, Date dishUpdateTime, Date dishCreateTime
+            , Date dishUpdateTimeGmt, Date dishCreateTimeGmt
+            , Long viewCount, Long commentCount, Long shareCount, Double rating) {
         this.id = id;
         this.name = name;
         this.shortDescription = shortDescription;
@@ -184,11 +187,11 @@ public class Dish extends BaseFWModel {
     }
 
     @Column(name = "rating")
-    public Long getRating() {
+    public Double getRating() {
         return this.rating;
     }
 
-    public void setRating(final Long rating) {
+    public void setRating(final Double rating) {
         this.rating = rating;
     }
 

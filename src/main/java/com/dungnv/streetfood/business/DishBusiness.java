@@ -33,6 +33,7 @@ import org.hibernate.Session;
 import javax.transaction.Transactional;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
+import org.hibernate.type.DoubleType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
@@ -409,7 +410,7 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
                 listParam.add(Long.valueOf(dto.getNotCategoryId()));
                 listType.add(LongType.INSTANCE);
             }
-            
+
             if (!StringUtils.isNullOrEmpty(dto.getArticleId())) {
                 sbQuery.append(" AND c.id in ( select dish_id from dish_article where article_id = ? ) ");
                 listParam.add(Long.valueOf(dto.getArticleId()));
@@ -451,6 +452,54 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
                 listType.add(StringType.INSTANCE);
             }
 
+            if (!StringUtils.isNullOrEmpty(dto.getViewCountFrom())) {
+                sbQuery.append(" AND c.view_count >= ? ");
+                listParam.add(Long.valueOf(dto.getViewCountFrom()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getViewCountTo())) {
+                sbQuery.append(" AND c.view_count <= ? ");
+                listParam.add(Long.valueOf(dto.getViewCountTo()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getCommentCountFrom())) {
+                sbQuery.append(" AND c.comment_count >= ? ");
+                listParam.add(Long.valueOf(dto.getCommentCountFrom()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getCommentCountTo())) {
+                sbQuery.append(" AND c.comment_count <= ? ");
+                listParam.add(Long.valueOf(dto.getCommentCountTo()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getShareCountFrom())) {
+                sbQuery.append(" AND c.share_count >= ? ");
+                listParam.add(Long.valueOf(dto.getShareCountFrom()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getShareCountTo())) {
+                sbQuery.append(" AND c.share_count <= ? ");
+                listParam.add(Long.valueOf(dto.getShareCountTo()));
+                listType.add(LongType.INSTANCE);
+            }
+            
+            if (!StringUtils.isNullOrEmpty(dto.getRatingFrom())) {
+                sbQuery.append(" AND c.rating >= ? ");
+                listParam.add(Double.valueOf(dto.getRatingFrom()));
+                listType.add(DoubleType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getRatingTo())) {
+                sbQuery.append(" AND c.rating <= ? ");
+                listParam.add(Double.valueOf(dto.getRatingTo()));
+                listType.add(DoubleType.INSTANCE);
+            }
+
             if (dto.getListTag() != null && !dto.getListTag().isEmpty()) {
                 sbQuery.append(" AND  c.id in (select dish_id from tag_dish where tag_id in ");
                 sbQuery.append(QueryUtil.getParameterHolderString(dto.getListTag().size()));
@@ -459,6 +508,26 @@ public class DishBusiness extends BaseFWServiceImpl<DishDAO, DishDTO, Dish> impl
                 for (String tagId : listTag) {
                     listParam.add(Long.valueOf(tagId));
                     listType.add(LongType.INSTANCE);
+                }
+            }
+
+            if (dto.getListNotLocale() != null && !dto.getListNotLocale().isEmpty()) {
+                sbQuery.append(" AND not exists (select l.dish_id from dish_language l where l.language_code in ");
+                sbQuery.append(QueryUtil.getParameterHolderString(dto.getListNotLocale().size()));
+                sbQuery.append(" AND l.dish_id = c.id )");
+                List<String> listNotLocale = dto.getListNotLocale();
+                for (String notLocale : listNotLocale) {
+                    listParam.add(notLocale);
+                    listType.add(StringType.INSTANCE);
+                }
+            }
+            if (dto.getListLocale() != null && !dto.getListLocale().isEmpty()) {
+
+                for (String locale : dto.getListLocale()) {
+                    sbQuery.append(" AND exists (select l.dish_id from dish_language l where l.language_code = ? ");
+                    sbQuery.append(" AND l.dish_id = c.id )");
+                    listParam.add(locale);
+                    listType.add(StringType.INSTANCE);
                 }
             }
         }

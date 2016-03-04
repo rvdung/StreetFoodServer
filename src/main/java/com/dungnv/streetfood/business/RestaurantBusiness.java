@@ -27,12 +27,16 @@ import com.dungnv.vfw5.base.utils.QueryUtil;
 import com.dungnv.vfw5.base.utils.StringUtils;
 import org.hibernate.Session;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.transaction.Transactional;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
+import org.hibernate.type.DoubleType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
+import org.hibernate.type.TimeType;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -344,7 +348,7 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
         List<Type> listType = new ArrayList<>();
 
         if (isCount) {
-            sbQuery.append(" select count(c.id) as id from restaurant c where 1=1 ");
+            sbQuery.append(" select count(r.id) as id from restaurant r where 1=1 ");
         } else {
             sbQuery.append(" select ");
             sbQuery.append(" r.id");
@@ -402,12 +406,6 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
                 listType.add(StringType.INSTANCE);
             }
 
-            if (!StringUtils.isNullOrEmpty(dto.getRestaurantStatus())) {
-                sbQuery.append(" AND r.restaurant_status = ? ");
-                listParam.add(Long.valueOf(dto.getRestaurantStatus()));
-                listType.add(LongType.INSTANCE);
-            }
-
             if (!StringUtils.isNullOrEmpty(dto.getAddress())) {
                 sbQuery.append(" AND lower(r.address) like ? ");
                 listParam.add("%" + dto.getAddress().toLowerCase() + "%");
@@ -420,6 +418,116 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
                 listType.add(StringType.INSTANCE);
             }
 
+            if (!StringUtils.isNullOrEmpty(dto.getPhoneNumber())) {
+                sbQuery.append(" AND lower(r.phone_number) like ? ");
+                listParam.add("%" + dto.getPhoneNumber().toLowerCase() + "%");
+                listType.add(StringType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getCapacity())) {
+                sbQuery.append(" AND lower(r.capacity) like ? ");
+                listParam.add("%" + dto.getCapacity().toLowerCase() + "%");
+                listType.add(StringType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getRestaurantStatus())) {
+                sbQuery.append(" AND r.restaurant_status = ? ");
+                listParam.add(Long.valueOf(dto.getRestaurantStatus()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getCarParking())) {
+                sbQuery.append(" AND r.car_parking = ? ");
+                listParam.add(Long.valueOf(dto.getCarParking()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getMotobikeParking())) {
+                sbQuery.append(" AND r.motobike_parking = ? ");
+                listParam.add(Long.valueOf(dto.getMotobikeParking()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getViewCountFrom())) {
+                sbQuery.append(" AND r.view_count >= ? ");
+                listParam.add(Long.valueOf(dto.getViewCountFrom()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getViewCountTo())) {
+                sbQuery.append(" AND r.view_count <= ? ");
+                listParam.add(Long.valueOf(dto.getViewCountTo()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getCommentCountFrom())) {
+                sbQuery.append(" AND r.comment_count >= ? ");
+                listParam.add(Long.valueOf(dto.getCommentCountFrom()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getCommentCountTo())) {
+                sbQuery.append(" AND r.comment_count <= ? ");
+                listParam.add(Long.valueOf(dto.getCommentCountTo()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getShareCountFrom())) {
+                sbQuery.append(" AND r.share_count >= ? ");
+                listParam.add(Long.valueOf(dto.getShareCountFrom()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getShareCountTo())) {
+                sbQuery.append(" AND r.share_count <= ? ");
+                listParam.add(Long.valueOf(dto.getShareCountTo()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getRatingFrom())) {
+                sbQuery.append(" AND r.rating >= ? ");
+                listParam.add(Double.valueOf(dto.getRatingFrom()));
+                listType.add(DoubleType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getRatingTo())) {
+                sbQuery.append(" AND r.rating <= ? ");
+                listParam.add(Double.valueOf(dto.getRatingTo()));
+                listType.add(DoubleType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getWaitingTimeFrom())) {
+                sbQuery.append(" AND r.waiting_time >= ? ");
+                listParam.add(Long.valueOf(dto.getWaitingTimeFrom()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getWaitingTimeTo())) {
+                sbQuery.append(" AND r.waiting_time <= ? ");
+                listParam.add(Long.valueOf(dto.getWaitingTimeTo()));
+                listType.add(LongType.INSTANCE);
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getOperatingTimeStart())) {
+                try {
+                    sbQuery.append(" AND r.operating_time_start >= ? ");
+                    listParam.add(DateTimeUtils.convertStringToTime(dto.getOperatingTimeStart(), ParamUtils.HHmm));
+                    listType.add(TimeType.INSTANCE);
+                } catch (Exception ex) {
+                    Logger.getLogger(RestaurantBusiness.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            if (!StringUtils.isNullOrEmpty(dto.getOperatingTimeEnd())) {
+                try {
+                    sbQuery.append(" AND r.operating_time_end <= ? ");
+                    listParam.add(DateTimeUtils.convertStringToTime(dto.getOperatingTimeEnd(), ParamUtils.HHmm));
+                    listType.add(TimeType.INSTANCE);
+                } catch (Exception ex) {
+                    Logger.getLogger(RestaurantBusiness.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
             if (dto.getListTag() != null && !dto.getListTag().isEmpty()) {
                 sbQuery.append(" AND  r.id in (select restaurant_id from tag_restaurant where tag_id in ");
                 sbQuery.append(QueryUtil.getParameterHolderString(dto.getListTag().size()));
@@ -428,6 +536,26 @@ public class RestaurantBusiness extends BaseFWServiceImpl<RestaurantDAO, Restaur
                 for (String tagId : listTag) {
                     listParam.add(Long.valueOf(tagId));
                     listType.add(LongType.INSTANCE);
+                }
+            }
+
+            if (dto.getListNotLocale() != null && !dto.getListNotLocale().isEmpty()) {
+                sbQuery.append(" AND not exists (select l.restaurant_id from restaurant_language l where l.language_code in ");
+                sbQuery.append(QueryUtil.getParameterHolderString(dto.getListNotLocale().size()));
+                sbQuery.append(" AND l.restaurant_id = r.id )");
+                List<String> listNotLocale = dto.getListNotLocale();
+                for (String notLocale : listNotLocale) {
+                    listParam.add(notLocale);
+                    listType.add(StringType.INSTANCE);
+                }
+            }
+            if (dto.getListLocale() != null && !dto.getListLocale().isEmpty()) {
+
+                for (String locale : dto.getListLocale()) {
+                    sbQuery.append(" AND exists (select l.restaurant_id from restaurant_language l where l.language_code = ? ");
+                    sbQuery.append(" AND l.restaurant_id = r.id )");
+                    listParam.add(locale);
+                    listType.add(StringType.INSTANCE);
                 }
             }
         }

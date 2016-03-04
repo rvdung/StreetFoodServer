@@ -39,6 +39,16 @@ public class DishDTO extends BaseFWDTO<Dish> {
 
     public final static String ID = "id";
 
+    private String viewCountFrom;
+    private String commentCountFrom;
+    private String shareCountFrom;
+    private String ratingFrom;
+
+    private String viewCountTo;
+    private String commentCountTo;
+    private String shareCountTo;
+    private String ratingTo;
+
     private String categoryId;
     private String notCategoryId;
     private String restaurantId;
@@ -50,6 +60,8 @@ public class DishDTO extends BaseFWDTO<Dish> {
     private List<DishLanguageDTO> listLanguage;
     private List<String> listTag;
     private List<String> listImgUrl;
+    private List<String> listLocale;
+    private List<String> listNotLocale;
     private String imageId;
     private String imageUrl;
 
@@ -74,6 +86,86 @@ public class DishDTO extends BaseFWDTO<Dish> {
         this.rating = rating;
     }
     //Getters and setters
+
+    public List<String> getListLocale() {
+        return listLocale;
+    }
+
+    public void setListLocale(List<String> listLocale) {
+        this.listLocale = listLocale;
+    }
+
+    public List<String> getListNotLocale() {
+        return listNotLocale;
+    }
+
+    public void setListNotLocale(List<String> listNotLocale) {
+        this.listNotLocale = listNotLocale;
+    }
+
+    public String getViewCountFrom() {
+        return viewCountFrom;
+    }
+
+    public void setViewCountFrom(String viewCountFrom) {
+        this.viewCountFrom = viewCountFrom;
+    }
+
+    public String getCommentCountFrom() {
+        return commentCountFrom;
+    }
+
+    public void setCommentCountFrom(String commentCountFrom) {
+        this.commentCountFrom = commentCountFrom;
+    }
+
+    public String getShareCountFrom() {
+        return shareCountFrom;
+    }
+
+    public void setShareCountFrom(String shareCountFrom) {
+        this.shareCountFrom = shareCountFrom;
+    }
+
+    public String getRatingFrom() {
+        return ratingFrom;
+    }
+
+    public void setRatingFrom(String ratingFrom) {
+        this.ratingFrom = ratingFrom;
+    }
+
+    public String getViewCountTo() {
+        return viewCountTo;
+    }
+
+    public void setViewCountTo(String viewCountTo) {
+        this.viewCountTo = viewCountTo;
+    }
+
+    public String getCommentCountTo() {
+        return commentCountTo;
+    }
+
+    public void setCommentCountTo(String commentCountTo) {
+        this.commentCountTo = commentCountTo;
+    }
+
+    public String getShareCountTo() {
+        return shareCountTo;
+    }
+
+    public void setShareCountTo(String shareCountTo) {
+        this.shareCountTo = shareCountTo;
+    }
+
+    public String getRatingTo() {
+        return ratingTo;
+    }
+
+    public void setRatingTo(String ratingTo) {
+        this.ratingTo = ratingTo;
+    }
 
     public String getRestaurantId() {
         return restaurantId;
@@ -293,7 +385,7 @@ public class DishDTO extends BaseFWDTO<Dish> {
                     !StringUtils.validString(shareCount) ? null
                     : Long.valueOf(shareCount),
                     !StringUtils.validString(rating) ? null
-                    : Long.valueOf(rating));
+                    : Double.valueOf(rating));
             return model;
         } catch (Exception e) {
             return null;

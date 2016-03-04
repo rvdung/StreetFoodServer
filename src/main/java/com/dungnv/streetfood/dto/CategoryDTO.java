@@ -41,6 +41,8 @@ public class CategoryDTO extends BaseFWDTO<Category> {
     private List<DishGroupLangageDTO> listLanguage;
     private List<String> listTag;
     private List<String> listImgUrl;
+    private List<String> listLocale;
+    private List<String> listNotLocale;
     private String imageId;
     private String imageUrl;
 
@@ -61,7 +63,23 @@ public class CategoryDTO extends BaseFWDTO<Category> {
     }
     //Getters and setters
 
-    public String getDishId() {
+    public List<String> getListLocale() {
+        return listLocale;
+    }
+
+    public void setListLocale(List<String> listLocale) {
+        this.listLocale = listLocale;
+    }
+
+    public List<String> getListNotLocale() {
+        return listNotLocale;
+    }
+
+    public void setListNotLocale(List<String> listNotLocale) {
+        this.listNotLocale = listNotLocale;
+    }
+
+     public String getDishId() {
         return dishId;
     }
 
